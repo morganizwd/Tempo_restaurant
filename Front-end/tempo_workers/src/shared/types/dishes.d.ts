@@ -1,5 +1,5 @@
 import CategoryType from "./category";
-import EmployeeType from "./employee";
+import TablewareDishType from "./tablewareDish";
 
 declare module "DishType"
 
@@ -10,6 +10,7 @@ type DishType = {
     price: string;
     category: CategoryType;
     categoryId: string;
+    tablewareList: TablewareDishType[];
 }
 
 export default DishType

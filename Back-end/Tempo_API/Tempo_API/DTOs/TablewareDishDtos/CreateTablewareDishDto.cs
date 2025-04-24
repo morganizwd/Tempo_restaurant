@@ -6,4 +6,5 @@ public class CreateTablewareDishDto : IBaseDto
 {
     public Guid TablewareId { get; set; }
     public Guid DishId { get; set; }
+    public int Number { get; set; }
 }

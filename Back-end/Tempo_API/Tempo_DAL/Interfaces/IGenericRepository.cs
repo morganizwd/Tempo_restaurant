@@ -15,7 +15,8 @@ public interface IGenericRepository<Entity> where Entity : BaseEntity
 
     Task<Entity> GetById(Guid id, CancellationToken cancellationToken);
 
-    Task<List<Entity>> GetByPredicate(Expression<Func<Entity, bool>> predicate, CancellationToken cancellationToken);
+    Task<List<Entity>> GetByPredicate(Expression<Func<Entity, bool>> predicate, CancellationToken cancellationToken,
+        Expression<Func<Entity, object>>[]? includeProperties = null);
 
     Task<List<Entity>> Paginate(int limit, int page, CancellationToken cancellationToken, out int total, out int count, Expression<Func<Entity, bool>>? predicate);
 }

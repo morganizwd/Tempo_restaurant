@@ -8,6 +8,7 @@ public class DrinkOrderDto : IBaseDto
 {
     public Guid DrinkId { get; set; }
     public Guid OrderId { get; set; }
+    public int Number { get; set; }
     public DrinkDto? Drink { get; set; }
     public OrderDto? Order { get; set; }
 }

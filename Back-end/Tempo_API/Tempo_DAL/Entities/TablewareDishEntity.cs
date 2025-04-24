@@ -4,6 +4,7 @@ public class TablewareDishEntity : BaseEntity
 {
     public Guid TablewareId { get; set; }
     public Guid DishId { get; set; }
+    public int Number { get; set; }
 
     public TablewareEntity? Tableware { get; set; }
     public DishEntity? Dish { get; set; }

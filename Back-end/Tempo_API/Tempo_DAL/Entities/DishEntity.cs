@@ -10,6 +10,6 @@ public class DishEntity : BaseEntity
 
     public CategoryEntity? Category { get; set; }
     public List<DishwareEntity> DishwareList { get; set; } = new();
-    public List<TablewareEntity> TablewareList { get; set; } = new();
+    public List<TablewareDishEntity> TablewareList { get; set; } = new();
     public List<IngredientDishEntity> Ingredients { get; set; } = new();
 }

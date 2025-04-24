@@ -4,6 +4,7 @@ public class DishOrderModel : BaseModel
 {
     public Guid DishId { get; set; }
     public Guid OrderId { get; set; }
+    public int Number { get; set; }
     public DishModel? Dish { get; set; }
     public OrderModel? Order { get; set; }
 }

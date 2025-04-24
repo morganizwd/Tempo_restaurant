@@ -9,8 +9,8 @@ export interface OrderSlice {
     loading: boolean;
     success: boolean;
     errorMessage: string;
-    Order: PaginatedType<OrderType>;
-    fetchOrders: () => void;
+    orders: OrderType[];
+    fetchOrders: (id: string) => void;
     createOrder: (newOrder: any) => Promise<void>;
     updateOrder: (id: string, Order: Partial<OrderType>) => void;
     deleteOrder: (id: string) => void;
@@ -20,7 +20,7 @@ const InitialOrderSlice = {
     loading: false,
     success: false,
     errorMessage: "",
-    Order: {} as PaginatedType<OrderType>,
+    orders: [],
 };
 
 export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
@@ -30,11 +30,11 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
     return {
         ...InitialOrderSlice,
 
-        fetchOrders: async () => {
+        fetchOrders: async (id: string) => {
             set({ loading: true });
 
-            const res = await HttpRequest<PaginatedType<OrderType>>({
-                uri: `Order`,
+            const res = await HttpRequest<OrderType[]>({
+                uri: `Order/waiter/${id}`,
                 method: RESTMethod.Get,
             });
 
@@ -44,7 +44,7 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
             }
             set({
                 loading: false,
-                Order: res.data,
+                orders: res.data,
             });
         },
         deleteOrder: async (id) => {
@@ -60,8 +60,8 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
             set((state) => ({
                 loading: false,
                 Order: {
-                    ...state.Order,
-                    items: state.Order.items.filter((Order) => Order.id !== id),
+                    ...state.orders,
+                    items: state.orders.filter((Order) => Order.id !== id),
                 },
             }));
         },
@@ -79,8 +79,8 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
             set((state) => ({
                 loading: false,
                 Order: {
-                    ...state.Order,
-                    items: state.Order.items.map((Order) =>
+                    ...state.orders,
+                    items: state.orders.map((Order) =>
                         Order.id === id ? { ...Order, ...updatedData } : Order
                     ),
                 },
