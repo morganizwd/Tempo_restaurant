@@ -1,5 +1,5 @@
-import DishType from "./dishes";
-import DrinkType from "./drink";
+import DishOrderType from "./dishOrder";
+import DrinkOrderType from "./drinkOrder";
 import TableType from "./table";
 
 declare module "OrderType"
@@ -10,8 +10,8 @@ type OrderType = {
     status: number;
     table: TableType;
     user: string;
-    dishes: DishType[];
-    drinks: DrinkType[];
+    dishes: DishOrderType[];
+    drinks: DrinkOrderType[];
 }
 
 export default OrderType
