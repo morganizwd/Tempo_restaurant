@@ -9,5 +9,6 @@ public class TablewareDishValidator : AbstractValidator<CreateTablewareDishDto>
     {
         RuleFor(x => x.DishId).NotEmpty().NotNull();
         RuleFor(x => x.TablewareId).NotEmpty().NotNull();
+        RuleFor(x => x.Number).NotEmpty().NotNull();
     }
 }

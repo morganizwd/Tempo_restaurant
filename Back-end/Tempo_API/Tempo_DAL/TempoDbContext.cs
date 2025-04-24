@@ -15,10 +15,10 @@ public class TempoDbContext : DbContext
 
 
         //Auto migrations
-        if (Database.IsRelational())
-        {
-            Database.Migrate();
-        }
+        //if (Database.IsRelational())
+        //{
+        //    Database.Migrate();
+        //}
     }
     public DbSet<BillEntity> Bill { get; set; }
     public DbSet<CategoryEntity> Category { get; set; }

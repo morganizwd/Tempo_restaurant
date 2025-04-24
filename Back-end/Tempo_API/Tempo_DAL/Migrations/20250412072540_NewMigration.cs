@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Tempo_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class NewMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -107,6 +107,8 @@ namespace Tempo_DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Photo = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -173,77 +175,6 @@ namespace Tempo_DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Table",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Max_people = table.Column<int>(type: "integer", nullable: false),
-                    WaiterId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Table", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Table_Waiter_WaiterId",
-                        column: x => x.WaiterId,
-                        principalTable: "Waiter",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Order",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    People_num = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    TableId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Order", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Order_Table_TableId",
-                        column: x => x.TableId,
-                        principalTable: "Table",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Order_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Bill",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Cash = table.Column<bool>(type: "boolean", nullable: false),
-                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bill", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Bill_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Dish",
                 columns: table => new
                 {
@@ -252,7 +183,8 @@ namespace Tempo_DAL.Migrations
                     Approx_time = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    OrderEntityId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Photo = table.Column<string>(type: "text", nullable: false),
+                    IngredientEntityId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -266,10 +198,32 @@ namespace Tempo_DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Dish_Order_OrderEntityId",
-                        column: x => x.OrderEntityId,
-                        principalTable: "Order",
+                        name: "FK_Dish_Ingredient_IngredientEntityId",
+                        column: x => x.IngredientEntityId,
+                        principalTable: "Ingredient",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Table",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Max_people = table.Column<int>(type: "integer", nullable: false),
+                    WaiterId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Table", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Table_Waiter_WaiterId",
+                        column: x => x.WaiterId,
+                        principalTable: "Waiter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -292,30 +246,6 @@ namespace Tempo_DAL.Migrations
                         name: "FK_DishEntityDishwareEntity_Dishware_DishwareListId",
                         column: x => x.DishwareListId,
                         principalTable: "Dishware",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DishEntityIngredientEntity",
-                columns: table => new
-                {
-                    DishesId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IngredientsId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DishEntityIngredientEntity", x => new { x.DishesId, x.IngredientsId });
-                    table.ForeignKey(
-                        name: "FK_DishEntityIngredientEntity_Dish_DishesId",
-                        column: x => x.DishesId,
-                        principalTable: "Dish",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DishEntityIngredientEntity_Ingredient_IngredientsId",
-                        column: x => x.IngredientsId,
-                        principalTable: "Ingredient",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -426,6 +356,110 @@ namespace Tempo_DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    People_num = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    TableId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Order_Table_TableId",
+                        column: x => x.TableId,
+                        principalTable: "Table",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Order_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bill",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Cash = table.Column<bool>(type: "boolean", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bill", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bill_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DishOrder",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DishId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DishOrder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DishOrder_Dish_DishId",
+                        column: x => x.DishId,
+                        principalTable: "Dish",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DishOrder_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DrinkOrder",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    DrinkId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DrinkOrder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DrinkOrder_Drink_DrinkId",
+                        column: x => x.DrinkId,
+                        principalTable: "Drink",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DrinkOrder_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Bill_OrderId",
                 table: "Bill",
@@ -448,9 +482,9 @@ namespace Tempo_DAL.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dish_OrderEntityId",
+                name: "IX_Dish_IngredientEntityId",
                 table: "Dish",
-                column: "OrderEntityId");
+                column: "IngredientEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DishEntityDishwareEntity_DishwareListId",
@@ -458,14 +492,19 @@ namespace Tempo_DAL.Migrations
                 column: "DishwareListId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DishEntityIngredientEntity_IngredientsId",
-                table: "DishEntityIngredientEntity",
-                column: "IngredientsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DishEntityTablewareEntity_TablewareListId",
                 table: "DishEntityTablewareEntity",
                 column: "TablewareListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DishOrder_DishId",
+                table: "DishOrder",
+                column: "DishId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DishOrder_OrderId",
+                table: "DishOrder",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DishwareDish_DishId",
@@ -481,6 +520,16 @@ namespace Tempo_DAL.Migrations
                 name: "IX_Drink_CategoryId",
                 table: "Drink",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DrinkOrder_DrinkId",
+                table: "DrinkOrder",
+                column: "DrinkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DrinkOrder_OrderId",
+                table: "DrinkOrder",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IngredientDish_DishId",
@@ -537,16 +586,16 @@ namespace Tempo_DAL.Migrations
                 name: "DishEntityDishwareEntity");
 
             migrationBuilder.DropTable(
-                name: "DishEntityIngredientEntity");
+                name: "DishEntityTablewareEntity");
 
             migrationBuilder.DropTable(
-                name: "DishEntityTablewareEntity");
+                name: "DishOrder");
 
             migrationBuilder.DropTable(
                 name: "DishwareDish");
 
             migrationBuilder.DropTable(
-                name: "Drink");
+                name: "DrinkOrder");
 
             migrationBuilder.DropTable(
                 name: "IngredientDish");
@@ -558,7 +607,10 @@ namespace Tempo_DAL.Migrations
                 name: "Dishware");
 
             migrationBuilder.DropTable(
-                name: "Ingredient");
+                name: "Drink");
+
+            migrationBuilder.DropTable(
+                name: "Order");
 
             migrationBuilder.DropTable(
                 name: "Dish");
@@ -567,16 +619,16 @@ namespace Tempo_DAL.Migrations
                 name: "Tableware");
 
             migrationBuilder.DropTable(
-                name: "Category");
-
-            migrationBuilder.DropTable(
-                name: "Order");
-
-            migrationBuilder.DropTable(
                 name: "Table");
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Category");
+
+            migrationBuilder.DropTable(
+                name: "Ingredient");
 
             migrationBuilder.DropTable(
                 name: "Waiter");

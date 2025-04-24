@@ -8,6 +8,7 @@ public class TablewareDishDto : IBaseDto
 {
     public Guid TablewareId { get; set; }
     public Guid DishId { get; set; }
+    public int Number { get; set; }
 
     public TablewareDto? Tableware { get; set; }
     public DishDto? Dish { get; set; }

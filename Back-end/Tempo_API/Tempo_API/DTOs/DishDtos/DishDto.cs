@@ -1,7 +1,7 @@
 ﻿using Tempo_API.DTOs.CategoryDtos;
 using Tempo_API.DTOs.DishwareDishDtos;
 using Tempo_API.DTOs.IngredientDishDtos;
-using Tempo_API.DTOs.TablewareDtos;
+using Tempo_API.DTOs.TablewareDishDtos;
 using Tempo_API.Interfaces;
 namespace Tempo_API.DTOs.DishDtos;
 
@@ -16,6 +16,6 @@ public class DishDto : IBaseDto
 
     public CategoryDto? Category { get; set; }
     public List<DishwareDishDto?> DishwareList { get; set; } = new();
-    public List<TablewareDto?> TablewareList { get; set; } = new();
+    public List<TablewareDishDto?> TablewareList { get; set; } = new();
     public List<IngredientDishDto> Ingredients { get; set; } = new();
 }

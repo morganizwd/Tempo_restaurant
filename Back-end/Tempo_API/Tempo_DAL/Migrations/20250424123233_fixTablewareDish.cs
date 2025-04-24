@@ -5,25 +5,25 @@
 namespace Tempo_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPhotoInDish : Migration
+    public partial class fixTablewareDish : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Photo",
-                table: "Dish",
-                type: "text",
+            migrationBuilder.AddColumn<int>(
+                name: "Number",
+                table: "TablewareDish",
+                type: "integer",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Photo",
-                table: "Dish");
+                name: "Number",
+                table: "TablewareDish");
         }
     }
 }

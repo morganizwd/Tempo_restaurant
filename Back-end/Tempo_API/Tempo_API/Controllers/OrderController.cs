@@ -9,7 +9,21 @@ namespace Tempo_API.Controllers;
 [ApiController]
 public class OrderController : GenericController<OrderModel, OrderDto, CreateOrderDto>
 {
+
+    private readonly IOrderService _orderService;
+    private readonly IMapper _mapper;
+
     public OrderController(IOrderService service, IMapper mapper) : base(service, mapper)
     {
+        _orderService = service;
+        _mapper = mapper;
+    }
+
+    [HttpGet("waiter/{id}")]
+
+    public async Task<List<OrderDto>> GetWaitersOrders(Guid id, CancellationToken cancellationToken)
+    {
+        var models = await _orderService.GetWaitersOrders(id, cancellationToken);
+        return _mapper.Map<List<OrderDto>>(models);
     }
 }

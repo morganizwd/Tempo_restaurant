@@ -64,10 +64,23 @@ public class GenericRepository<Entity> : IGenericRepository<Entity> where Entity
         return result;
     }
 
-    public async Task<List<Entity>> GetByPredicate(Expression<Func<Entity, bool>> predicate, CancellationToken cancellationToken)
+    public Task<List<Entity>> GetByPredicate(Expression<Func<Entity, bool>> predicate, CancellationToken cancellationToken,
+        Expression<Func<Entity, object>>[]? includeProperties = null)
     {
-        var result = await dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
-        return result;
+        var query = dbSet.AsNoTracking();
+
+        if (includeProperties != null)
+        {
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+        }
+
+        return query
+            .Where(predicate)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public Task<List<Entity>> Paginate(int limit, int page, CancellationToken cancellationToken, out int total, out int count, Expression<Func<Entity, bool>>? predicate)
