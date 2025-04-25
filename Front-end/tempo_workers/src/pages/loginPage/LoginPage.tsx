@@ -1,6 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import React, { useEffect } from "react";
-import  { Navigate, redirect } from 'react-router-dom'
+import { Navigate, redirect } from 'react-router-dom'
 import "./loginPage.scss";
 import { useGlobalStore } from "../../shared/state/globalStore";
 import EmployeeType from "../../shared/types/employee";
@@ -13,7 +13,7 @@ const LoginPage = () => {
   const [admin, setIsAdmin] = React.useState(false);
   const { login, currentUser } = useGlobalStore();
 
-  useEffect(() => { 
+  useEffect(() => {
     console.log(currentUser)
     if (currentUser != {} as EmployeeType && currentUser != null) {
       setIsWaiter(currentUser.waiter != null);
@@ -27,6 +27,9 @@ const LoginPage = () => {
   }
   if (admin) {
     return <Navigate to={`/AdminPage`} />;
+  }
+  if (cook) {
+    return <Navigate to={`/CookPage`} />;
   }
 
   const handleLoginChange = (
@@ -42,39 +45,39 @@ const LoginPage = () => {
   };
 
   return (
-      <div id="content">
-        <div id="login-form">
-          <TextField
-            className="text-input"
-            id="login-input"
-            label="Логин"
-            variant="outlined"
-            value={loginData}
-            onChange={handleLoginChange}
-          />
-          <TextField
-            className="text-input"
-            id="password-input"
-            label="Пароль"
-            type="password"
-            variant="outlined"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          <Button
-            variant="contained"
-            id="button"
-            onClick={(event) => {
-              event.preventDefault();
-              if (loginData !== "" && password !== "") {
-                login({ login: loginData, password: password });
-              }
-            }}
-          >
-            Войти
-          </Button>
-        </div>
+    <div id="content">
+      <div id="login-form">
+        <TextField
+          className="text-input"
+          id="login-input"
+          label="Логин"
+          variant="outlined"
+          value={loginData}
+          onChange={handleLoginChange}
+        />
+        <TextField
+          className="text-input"
+          id="password-input"
+          label="Пароль"
+          type="password"
+          variant="outlined"
+          value={password}
+          onChange={handlePasswordChange}
+        />
+        <Button
+          variant="contained"
+          id="button"
+          onClick={(event) => {
+            event.preventDefault();
+            if (loginData !== "" && password !== "") {
+              login({ login: loginData, password: password });
+            }
+          }}
+        >
+          Войти
+        </Button>
       </div>
+    </div>
   );
 };
 

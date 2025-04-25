@@ -6,11 +6,13 @@ import PaginatedType from "../types/paginatedModel";
 import OrderType from "../types/order";
 
 export interface OrderSlice {
-    loading: boolean;
+    loading: boolean;   
     success: boolean;
     errorMessage: string;
     orders: OrderType[];
     fetchOrders: (id: string) => void;
+    fetchCookOrders: (id: string) => void;
+    deleteCookOrder: (id: string) => void;
     createOrder: (newOrder: any) => Promise<void>;
     updateOrder: (id: string, Order: Partial<OrderType>) => void;
     deleteOrder: (id: string) => void;
@@ -30,6 +32,24 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
     return {
         ...InitialOrderSlice,
 
+        fetchCookOrders: async (id: string) => {
+            set({ loading: true });
+
+            const res = await HttpRequest<OrderType[]>({
+                uri: `Order/cook/${id}`,
+                method: RESTMethod.Get,
+            });
+
+            if (res.code === "error") {
+                set({ errorMessage: res.error.message, loading: false });
+                return;
+            }
+            set({
+                loading: false,
+                orders: res.data,
+            });
+        },
+
         fetchOrders: async (id: string) => {
             set({ loading: true });
 
@@ -47,6 +67,26 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
                 orders: res.data,
             });
         },
+        
+        deleteCookOrder: async (id: string) => {
+            set({ loading: true });
+            const res = await HttpRequest({
+                uri: `/Order/${id}`,
+                method: RESTMethod.Delete,
+            });
+            if (res.code === "error") {
+                set({ errorMessage: res.error.message, loading: false });
+                return;
+            }
+            set((state) => ({
+                loading: false,
+                Order: {
+                    ...state.orders,
+                    items: state.orders.filter((Order) => Order.id !== id),
+                },
+            }));
+        },
+
         deleteOrder: async (id) => {
             set({ loading: true });
             const res = await HttpRequest({
@@ -65,6 +105,29 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
                 },
             }));
         },
+
+        updateCookOrder: async (id: string, updatedData: Partial<OrderType>) => {
+            set({ loading: true });
+            const res = await HttpRequest({
+                uri: `/Order/${id}`,
+                method: RESTMethod.Put,
+                item: updatedData,
+            });
+            if (res.code === "error") {
+                set({ errorMessage: res.error.message, loading: false });
+                return;
+            }
+            set((state) => ({
+                loading: false,
+                Order: {
+                    ...state.orders,
+                    items: state.orders.map((Order) =>
+                        Order.id === id ? { ...Order, ...updatedData } : Order
+                    ),
+                },
+            }));
+        },
+
         updateOrder: async (id, updatedData) => {
             set({ loading: true });
             const res = await HttpRequest({

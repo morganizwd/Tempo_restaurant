@@ -19,6 +19,13 @@ public class OrderController : GenericController<OrderModel, OrderDto, CreateOrd
         _mapper = mapper;
     }
 
+    [HttpGet("cook/{cookId}")]
+    public async Task<List<OrderDto>> GetCookOrders(Guid cookId, CancellationToken cancellationToken)
+    {
+        var models = await _orderService.GetCookOrders(cookId, cancellationToken);
+        return _mapper.Map<List<OrderDto>>(models);
+    }
+
     [HttpGet("waiter/{id}")]
 
     public async Task<List<OrderDto>> GetWaitersOrders(Guid id, CancellationToken cancellationToken)
