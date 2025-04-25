@@ -11,6 +11,8 @@ export interface OrderSlice {
     errorMessage: string;
     orders: OrderType[];
     fetchOrders: (id: string) => void;
+    fetchCookOrders: (id: string) => void;
+    deleteCookOrder: (id: string) => void;
     createOrder: (newOrder: any) => Promise<void>;
     updateOrder: (id: string, Order: Partial<OrderType>) => void;
     deleteOrder: (id: string) => void;

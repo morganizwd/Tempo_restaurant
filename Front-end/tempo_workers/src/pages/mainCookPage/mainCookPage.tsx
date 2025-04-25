@@ -5,26 +5,26 @@ import SingleOrderComponent from '../../components/SingleOrderComponent/SingleOr
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
 
 const MainCookPage: React.FC = () => {
-    const { orders, fetchOrders, currentUser } = useGlobalStore();
+    const { orders, fetchCookOrders, currentUser } = useGlobalStore();
 
     useEffect(() => {
-        console.log('Current User:', currentUser); // Логируем текущего пользователя
+        console.log('Current User:', currentUser);
         if (currentUser?.cook?.id) {
-            console.log('Cook ID:', currentUser.cook.id); // Логируем cookId
-            fetchOrders(currentUser.cook.id);
+            console.log('Cook ID:', currentUser.cook.id);
+            fetchCookOrders(currentUser.cook.id);
         } else {
             console.log('Current user or cook is not defined');
         }
     }, [currentUser]);
     
     useEffect(() => {
-        console.log('Fetched orders:', orders); // Логируем заказы после их получения
+        console.log('Fetched orders:', orders);
     }, [orders]);
     
     let orderList = [] as ReactJSXElement[];
     
     orders.forEach(order => {
-        console.log('Order:', order); // Логируем каждый заказ
+        console.log('Order:', order);
         if (!order.id) {
             console.error('Order is missing an id:', order);
         }
