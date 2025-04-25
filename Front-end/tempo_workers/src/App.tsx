@@ -6,6 +6,7 @@ import MainWaiterPage from "./pages/mainWaiterPage/MainWaiterPage";
 import Header from "./modules/header/Header";
 import Footer from "./modules/footer/Footer";
 import { useGlobalStore } from "./shared/state/globalStore";
+import MainCookPage from "./pages/mainCookPage/mainCookPage";
 
 const App = () => {
   const { currentUser } = useGlobalStore();
@@ -26,6 +27,13 @@ const App = () => {
         <Routes>
           <Route path="/WaiterPage" element={currentUser ? (
             <MainWaiterPage />
+          ) : (
+            <Navigate replace to={"/login"} />
+          )} />
+        </Routes>
+        <Routes>
+          <Route path="/CookPage" element={currentUser ? (
+            <MainCookPage />
           ) : (
             <Navigate replace to={"/login"} />
           )} />

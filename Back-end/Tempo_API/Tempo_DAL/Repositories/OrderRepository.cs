@@ -12,6 +12,22 @@ public class OrderRepository : GenericRepository<OrderEntity>, IOrderRepository
     {
     }
 
+    public async Task<List<OrderEntity>> GetCookOrders(Guid cookId, CancellationToken cancellationToken)
+    {
+        var cookCategoryId = await dbContext.Cook
+            .Where(c => c.Id == cookId)
+            .Select(c => c.CategoryId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        var data = await dbSet
+            .AsNoTracking()
+            .Include(o => o.Table)
+            .Include(o => o.Dishes).ThenInclude(d => d.Dish).ThenInclude(d => d.Category)
+            .Where(o => o.Dishes.Any(d => d.Dish.CategoryId == cookCategoryId))
+            .ToListAsync(cancellationToken);
+        return data;
+    }
+
     public Task<List<OrderEntity>> GetWaitersOrders(Guid waiterId, CancellationToken cancellationToken)
     {
         var data = dbSet

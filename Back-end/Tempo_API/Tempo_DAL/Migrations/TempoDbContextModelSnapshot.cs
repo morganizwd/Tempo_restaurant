@@ -422,6 +422,9 @@ namespace Tempo_DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CookId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -438,6 +441,8 @@ namespace Tempo_DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CookId");
 
                     b.HasIndex("WaiterId");
 
@@ -722,11 +727,17 @@ namespace Tempo_DAL.Migrations
 
             modelBuilder.Entity("Tempo_DAL.Entities.TableEntity", b =>
                 {
+                    b.HasOne("Tempo_DAL.Entities.CookEntity", "Cook")
+                        .WithMany()
+                        .HasForeignKey("CookId");
+
                     b.HasOne("Tempo_DAL.Entities.WaiterEntity", "Waiter")
                         .WithMany("Tables")
                         .HasForeignKey("WaiterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cook");
 
                     b.Navigation("Waiter");
                 });

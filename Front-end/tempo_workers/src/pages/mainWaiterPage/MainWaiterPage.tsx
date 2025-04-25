@@ -1,4 +1,3 @@
-import { Paper } from '@mui/material'
 import React, { useEffect } from 'react'
 import "./mainWaiterPage.scss";
 import { useGlobalStore } from '../../shared/state/globalStore';

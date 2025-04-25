@@ -46,6 +46,13 @@ public class OrderService : GenericService<OrderModel, OrderEntity>, IOrderServi
         return result;
     }
 
+    public async Task<List<OrderModel>> GetCookOrders(Guid cookId, CancellationToken cancellationToken)
+    {
+        var orderEntities = await _OrderRepository.GetCookOrders(cookId, cancellationToken);
+
+        return _mapper.Map<List<OrderModel>>(orderEntities);
+    }
+
     public async Task<List<OrderModel>> GetWaitersOrders(Guid id, CancellationToken cancellationToken)
     {
         var orderEntities = await _OrderRepository.GetWaitersOrders(id, cancellationToken);
