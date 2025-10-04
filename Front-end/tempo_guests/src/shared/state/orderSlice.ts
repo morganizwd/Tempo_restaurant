@@ -5,13 +5,17 @@ import { HttpRequest } from "../../api/GenericApi";
 import { RESTMethod } from "../types/RESTMethodEnum";
 import { TableSlice } from "./tableSlice";
 import DishType from "../types/dish";
+import { WatchOutlined } from "@mui/icons-material";
 
 export interface OrderSlice {
   loading: boolean;
   success: boolean;
   errorMessage: string;
   currentOrder: OrderType;
+  waitTime: string;
   postOrder: (tableIndex: number, people_num: number) => void;
+  getOrder: () => void;
+  getWaitTime: () => void;
 }
 
 const InitialOrderSlice = {
@@ -19,6 +23,7 @@ const InitialOrderSlice = {
   success: false,
   errorMessage: "",
   currentOrder: {} as OrderType,
+  waitTime: ''
 };
 
 export const OrderStore: StateCreator<GlobalStoreState, [], [], OrderSlice> = (
@@ -63,5 +68,31 @@ export const OrderStore: StateCreator<GlobalStoreState, [], [], OrderSlice> = (
       }
       set({ currentOrder: res.data, loading: false });
     },
+
+    getOrder: async () => {
+      set({ loading: true });
+      const res = await HttpRequest<OrderType>({
+        uri: `/order/${get().currentOrder.id}`,
+        method: RESTMethod.Get,
+      });
+      if (res.code == "error") {
+        set({ errorMessage: res.error.message, loading: false });
+        return;
+      }
+      set({ currentOrder: res.data, loading: false });
+    },
+
+    getWaitTime: async () => {
+      set({ loading: true });
+      const res = await HttpRequest<OrderType>({
+        uri: `/order/time/${get().currentOrder.id}`,
+        method: RESTMethod.Get,
+      });
+      if (res.code == "error") {
+        set({ errorMessage: res.error.message, loading: false });
+        return;
+      }
+      set({ waitTime: JSON.stringify(res.data), loading: false });
+    }
   };
 };

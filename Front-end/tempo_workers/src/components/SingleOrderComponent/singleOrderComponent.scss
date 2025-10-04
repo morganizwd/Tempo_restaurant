@@ -1,23 +1,38 @@
 .orderComp{
     width: 10rem;
     height: fit-content;
-    margin: 1rem;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    border: 1px black solid;
+    cursor: pointer;
 }
 
 .ordered{
     margin-top: 0;
     background-color: rgb(75, 75, 207);
-    height: 1.5rem;
+    border-radius: 2px 2px 0px 0px;
+    color: white;
+    height: 1.25rem;
 }
 
 .cooking{
     margin-top: 0;
     background-color: rgb(230, 112, 43);
-    height: 1.5rem;
+    border-radius: 2px 2px 0px 0px;
+    color: white;
+    height: 1.25rem;
 }
 
 .delivering{
     margin-top: 0;
     background-color: rgb(92, 180, 30);
+    border-radius: 2px 2px 0px 0px;
+    color: white;
+    height: 1.25rem;
+}
+
+.ready{
+    margin-top: 0;
+    background-color: rgb(205, 26, 26);
     height: 1.5rem;
 }

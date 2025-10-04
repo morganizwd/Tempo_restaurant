@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react'
-import "./mainWaiterPage.scss";
-import { useGlobalStore } from '../../shared/state/globalStore';
-import SingleOrderComponent from '../../components/SingleOrderComponent/SingleOrderComponent';
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace';
+import React, { useEffect } from 'react'
+import SingleOrderComponent from '../../components/SingleOrderComponent/SingleOrderComponent';
+import { useGlobalStore } from '../../shared/state/globalStore';
 
-const MainWaiterPage = () => {
-  const { orders, fetchOrders, currentUser } = useGlobalStore();
+const MainCookPage = () => {
+  const { orders, fetchCookOrders, currentUser } = useGlobalStore();
 
   useEffect(() => {
-    fetchOrders(currentUser!.waiter.id!);
+    fetchCookOrders(currentUser!.cook.id!);
   }, [])
 
   let orderList = [] as ReactJSXElement[];
@@ -22,4 +21,4 @@ const MainWaiterPage = () => {
   )
 }
 
-export default MainWaiterPage
+export default MainCookPage

@@ -75,18 +75,18 @@ const IngredientComponent = () => {
 
     const renderCategory = () => {
         const items: any[] = [];
-        for (let i in name) {
-            let value = name.items[i];
-            if (value == null) {
-                continue;
-            }
-            items.push(
-                <MenuItem
-                    key={`${value.id}`}
-                    value={value.id}
-                >{`${value.name}`}</MenuItem>
-            )
-        }
+        // for (let i in name) {
+        //     let value = name.items[i];
+        //     if (value == null) {
+        //         continue;
+        //     }
+        //     items.push(
+        //         <MenuItem
+        //             key={`${value.id}`}
+        //             value={value.id}
+        //         >{`${value.name}`}</MenuItem>
+        //     )
+        // }
         return items;
     }
 

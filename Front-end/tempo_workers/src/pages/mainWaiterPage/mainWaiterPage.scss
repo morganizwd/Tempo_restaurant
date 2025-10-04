@@ -5,7 +5,8 @@
     display: flex;
     flex-direction: column; 
     flex-wrap: wrap;
-    max-width: 80rem;
-    height: 53rem;
+    max-width: 80vw;
+    height: 200vh;
+    overflow: hidden;
     color: #444444;
 }

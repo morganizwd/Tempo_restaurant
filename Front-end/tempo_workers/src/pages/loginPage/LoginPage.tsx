@@ -28,6 +28,9 @@ const LoginPage = () => {
   if (admin) {
     return <Navigate to={`/AdminPage`} />;
   }
+  if (cook) {
+    return <Navigate to={`/CookPage`} />;
+  }
 
   const handleLoginChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

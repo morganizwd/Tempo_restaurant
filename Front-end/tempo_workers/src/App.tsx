@@ -6,33 +6,48 @@ import MainWaiterPage from "./pages/mainWaiterPage/MainWaiterPage";
 import Header from "./modules/header/Header";
 import Footer from "./modules/footer/Footer";
 import { useGlobalStore } from "./shared/state/globalStore";
+import MainCookPage from "./pages/mainCookPage/MainCookPage";
 
 const App = () => {
   const { currentUser } = useGlobalStore();
   return (
-    <div className="Container">
-      <Header />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-        </Routes>
-        <Routes>
-          <Route path="/AdminPage" element={currentUser ? (
-            <MainAdminPage />
-          ) : (
-            <Navigate replace to={"/login"} />
-          )} />
-        </Routes>
-        <Routes>
-          <Route path="/WaiterPage" element={currentUser ? (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/AdminPage" element={currentUser ? (
+          <MainAdminPage />
+        ) : (
+          <Navigate replace to={"/login"} />
+        )} />
+      </Routes>
+      <Routes>
+        <Route path="/login" element={<div className="Container">
+          <Header /><LoginPage /><Footer />
+        </div>} />
+      </Routes>
+      <Routes>
+        <Route path="/WaiterPage" element={<div className="Container">
+          <Header />{currentUser ? (
             <MainWaiterPage />
           ) : (
             <Navigate replace to={"/login"} />
-          )} />
-        </Routes>
-      </BrowserRouter>
-      <Footer />
-    </div>
+          )}<Footer />
+        </div>} />
+        <Route path="/CookPage" element={<div className="Container">
+          <Header />{currentUser ? (
+            <MainCookPage />
+          ) : (
+            <Navigate replace to={"/login"} />
+          )}<Footer />
+        </div>} />
+      </Routes>
+      <Routes>
+        <Route path="/" element={
+          <Navigate replace to={"/login"} />} />
+      </Routes>
+
+
+    </BrowserRouter>
+
   );
 };
 

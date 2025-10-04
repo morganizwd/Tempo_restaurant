@@ -2,7 +2,6 @@ import { StateCreator } from "zustand";
 import { sliceResetFns } from "./globalStore";
 import { HttpRequest } from "../../api/GenericApi";
 import { RESTMethod } from "../types/RESTMethodEnum";
-import PaginatedType from "../types/paginatedModel";
 import OrderType from "../types/order";
 
 export interface OrderSlice {
@@ -11,6 +10,7 @@ export interface OrderSlice {
     errorMessage: string;
     orders: OrderType[];
     fetchOrders: (id: string) => void;
+    fetchCookOrders: (id: string) => void;
     createOrder: (newOrder: any) => Promise<void>;
     updateOrder: (id: string, Order: Partial<OrderType>) => void;
     deleteOrder: (id: string) => void;
@@ -35,6 +35,23 @@ export const OrderStore: StateCreator<OrderSlice> = (set, get) => {
 
             const res = await HttpRequest<OrderType[]>({
                 uri: `Order/waiter/${id}`,
+                method: RESTMethod.Get,
+            });
+
+            if (res.code === "error") {
+                set({ errorMessage: res.error.message, loading: false });
+                return;
+            }
+            set({
+                loading: false,
+                orders: res.data,
+            });
+        },
+        fetchCookOrders: async (id: string) => {
+            set({ loading: true });
+
+            const res = await HttpRequest<OrderType[]>({
+                uri: `Order/cook/${id}`,
                 method: RESTMethod.Get,
             });
 

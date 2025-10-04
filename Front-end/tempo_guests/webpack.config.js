@@ -31,7 +31,7 @@ module.exports = {
             options: {
               // Prefer `dart-sass`, even if `sass-embedded` is available
               implementation: require("sass"),
-            },
+            }
           },
         ],
       },
@@ -39,6 +39,19 @@ module.exports = {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: "asset/resource",
       },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
+      },
+      // Добавьте это правило для файлов шрифтов из leaflet
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      }
     ],
   },
   plugins: [
@@ -59,7 +72,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "/"),
     },
-    port: 8081,
+    port: 8082,
     server: {
       type: "https",
       options: {

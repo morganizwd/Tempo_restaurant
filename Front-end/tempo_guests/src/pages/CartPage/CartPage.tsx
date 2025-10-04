@@ -17,10 +17,12 @@ import { useGlobalStore } from "../../shared/state/globalStore";
 import CartItemComponent from "../../components/CartComponents/CartItemComponent/CartItemComponent";
 import AddIcon from "@mui/icons-material/Add";
 import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   let { cart, countPrice, countTime, tables, fetchTables, postOrder } =
     useGlobalStore();
+  const navigate = useNavigate();
   const [peopleNumber, setPeopleNumber] = useState(1);
 
   useEffect(() => {
@@ -128,6 +130,7 @@ const CartPage = () => {
             variant="contained"
             onClick={() => {
               postOrder(Number.parseInt(table), peopleNumber);
+              navigate('/order')
             }}
           >
             Оформить заказ

@@ -6,16 +6,14 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import Header from "../../modules/header/Header";
-import Footer from "../../modules/footer/Footer";
 import "./mainAdminPage.scss";
 import PeopleIcon from '@mui/icons-material/People';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import CoffeeRoundedIcon from '@mui/icons-material/CoffeeRounded';
 import KitchenRoundedIcon from '@mui/icons-material/KitchenRounded';
-import { useGlobalStore } from '../../shared/state/globalStore';
+import { useGlobalStore, resetGlobalStore } from '../../shared/state/globalStore';
 import MainModule from '../../modules/mainModule/MainModule';
-import EmployeeType from '../../shared/types/employee';
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { useState } from 'react';
 
 export default function NestedList() {
@@ -29,12 +27,6 @@ export default function NestedList() {
     fetchCooks(page, limit);
     fetchWaiters(page, limit);
   }, [page, limit]);
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
 
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
@@ -57,8 +49,8 @@ export default function NestedList() {
   };
 
   return (
-      <div id="content">
-        <List sx={{ width: '30%', maxWidth: 360 }}>
+      <div className='Container'>
+        <List className='secondary_color ' id='side_menu'>
           <ListItemButton onClick={handleToggleEmployees}>
             <ListItemIcon>
               <PeopleIcon />
@@ -126,10 +118,18 @@ export default function NestedList() {
               <KitchenRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Ингредиенты" />
+        </ListItemButton>
+        
+        <ListItemButton
+            onClick={(event) => resetGlobalStore()}>
+            <ListItemIcon>
+              <AccountCircleRoundedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Выйти" />
           </ListItemButton>
         </List>
 
-        <div style={{ width: '70%' }}>
+        <div style={{marginLeft: '20vw', marginRight: '5vw'}}>
           <MainModule selectedIndex={selectedIndex} />
         </div>
 

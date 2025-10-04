@@ -1,5 +1,6 @@
 import DishType from "./dish";
 import DrinkType from "./drink";
+import { OrderStatus } from "./orderStatus";
 import TableType from "./table";
 import UserType from "./user";
 
@@ -11,6 +12,7 @@ type OrderType = {
   user: UserType;
   dishes: DishType[];
   drinks: DrinkType[];
+  status: OrderStatus;
 };
 
 export default OrderType;
