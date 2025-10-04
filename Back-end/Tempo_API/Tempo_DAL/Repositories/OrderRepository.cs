@@ -55,4 +55,16 @@ public class OrderRepository : GenericRepository<OrderEntity>, IOrderRepository
         }
         return result;
     }
+    public Task<List<OrderEntity>> GetCookingOrders(CancellationToken cancellationToken)
+    {
+        var data = dbSet
+            .AsNoTracking()
+            .Where(p => p.Status == OrderStatus.Ordered || p.Status == OrderStatus.Cooking)
+            .Include(e => e.Table)
+            .Include(e => e.Dishes).ThenInclude(e => e.Dish)
+            .Include(e => e.Drinks).ThenInclude(e => e.Drink)
+            .Include(e => e.User);
+        return data.ToListAsync(cancellationToken);
+
+    }
 }

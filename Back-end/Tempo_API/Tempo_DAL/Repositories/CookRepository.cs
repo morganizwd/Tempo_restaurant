@@ -40,7 +40,7 @@ public class CookRepository : GenericRepository<CookEntity>, ICookRepository
         return result;
     }
 
-    public Task<List<CookEntity>> Paginate(int limit, int page, CancellationToken cancellationToken, out int total, out int count, Expression<Func<CookEntity, bool>>? predicate)
+    public new Task<List<CookEntity>> Paginate(int limit, int page, CancellationToken cancellationToken, out int total, out int count, Expression<Func<CookEntity, bool>>? predicate)
     {
         var data = dbSet.AsNoTracking();
         if (predicate != null)

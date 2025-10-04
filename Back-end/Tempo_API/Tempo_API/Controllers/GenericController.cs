@@ -41,7 +41,7 @@ public class GenericController<Model, Dto, CreateDto> : ControllerBase where Mod
     }
 
     [HttpPut("{id}")]
-    public async Task<Dto> Update(Guid id, [FromBody] CreateDto dto, CancellationToken cancellationToken)
+    public async Task<Dto> Update(Guid id, [FromBody] Dto dto, CancellationToken cancellationToken)
     {
         var model = _mapper.Map<Model>(dto);
         var result = await _service.Update(id, model, cancellationToken);

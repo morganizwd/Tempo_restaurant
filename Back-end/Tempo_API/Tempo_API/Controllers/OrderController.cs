@@ -26,4 +26,19 @@ public class OrderController : GenericController<OrderModel, OrderDto, CreateOrd
         var models = await _orderService.GetWaitersOrders(id, cancellationToken);
         return _mapper.Map<List<OrderDto>>(models);
     }
+
+    [HttpGet("time/{id}")]
+
+    public Task<TimeSpan> GetWaitTime(Guid id, CancellationToken cancellationToken)
+    {
+        return _orderService.GetWaitTime(id, cancellationToken);
+    }
+
+    [HttpGet("cook/{id}")]
+
+    public async Task<List<OrderDto>> GetByCookId(Guid id, CancellationToken cancellationToken)
+    {
+        var models = await _orderService.GetByCookId(id, cancellationToken);
+        return _mapper.Map<List<OrderDto>>(models);
+    }
 }
