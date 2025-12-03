@@ -117,5 +117,32 @@ public class PostController : ControllerBase
         }
         return NoContent();
     }
+
+    [HttpPut("{id}/stats")]
+    public async Task<ActionResult<PostDto>> UpdatePostStats(string id, [FromBody] UpdatePostStatsDto statsDto)
+    {
+        try
+        {
+            var postModel = await _postService.UpdatePostStatsAsync(
+                id, 
+                statsDto.Likes, 
+                statsDto.Views, 
+                statsDto.Reposts, 
+                statsDto.Comments, 
+                _postsDirectory);
+
+            if (postModel == null)
+            {
+                return NotFound();
+            }
+
+            var postDto = _mapper.Map<PostDto>(postModel);
+            return Ok(postDto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
 }
 

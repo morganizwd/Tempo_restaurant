@@ -128,6 +128,38 @@ public class PostService : IPostService
         }
     }
 
+    public async Task<PostModel?> UpdatePostStatsAsync(string id, int? likes, int? views, int? reposts, int? comments, string postsDirectory)
+    {
+        var post = await GetPostByIdAsync(id, postsDirectory);
+        if (post == null)
+        {
+            return null;
+        }
+
+        // Обновляем только переданные значения
+        if (likes.HasValue)
+        {
+            post.Likes = likes.Value;
+        }
+        if (views.HasValue)
+        {
+            post.Views = views.Value;
+        }
+        if (reposts.HasValue)
+        {
+            post.Reposts = reposts.Value;
+        }
+        if (comments.HasValue)
+        {
+            post.Comments = comments.Value;
+        }
+
+        // Сохраняем обновленный пост
+        await SavePostToFileAsync(post, postsDirectory);
+
+        return post;
+    }
+
     private async Task SavePostToFileAsync(PostModel post, string postsDirectory)
     {
         var filePath = Path.Combine(postsDirectory, $"{post.Id}.json");

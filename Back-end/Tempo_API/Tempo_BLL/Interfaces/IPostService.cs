@@ -8,5 +8,6 @@ public interface IPostService
     Task<List<PostModel>> GetAllPostsAsync(string postsDirectory);
     Task<PostModel?> GetPostByIdAsync(string id, string postsDirectory);
     Task<bool> DeletePostAsync(string id, string postsDirectory);
+    Task<PostModel?> UpdatePostStatsAsync(string id, int? likes, int? views, int? reposts, int? comments, string postsDirectory);
 }
 

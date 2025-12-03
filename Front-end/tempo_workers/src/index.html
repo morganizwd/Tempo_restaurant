@@ -4,7 +4,19 @@
 <head>
   <meta charset="utf-8" />
   <title>React App</title>
-  <script src="https://js.puter.com/v2/"></script>
+  <script src="https://js.puter.com/v2/" async></script>
+  <script>
+    // Проверяем загрузку Puter.js
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (typeof window.puter !== 'undefined') {
+          console.log('Puter.js успешно загружен');
+        } else {
+          console.error('Puter.js не загружен! Проверьте подключение к интернету.');
+        }
+      }, 2000);
+    });
+  </script>
 </head>
 
 <body>

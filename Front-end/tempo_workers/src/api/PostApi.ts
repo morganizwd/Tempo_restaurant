@@ -11,6 +11,17 @@ export interface PostDto {
   text: string;
   imageUrl: string;
   createdAt: string;
+  likes: number;
+  views: number;
+  reposts: number;
+  comments: number;
+}
+
+export interface UpdatePostStatsDto {
+  likes?: number;
+  views?: number;
+  reposts?: number;
+  comments?: number;
 }
 
 export const PostApi = {
@@ -40,6 +51,11 @@ export const PostApi = {
 
   deletePost: async (id: string): Promise<void> => {
     await client.delete(`/Post/${id}`);
+  },
+
+  updatePostStats: async (id: string, stats: UpdatePostStatsDto): Promise<PostDto> => {
+    const response = await client.put(`/Post/${id}/stats`, stats);
+    return response.data;
   },
 };
 
