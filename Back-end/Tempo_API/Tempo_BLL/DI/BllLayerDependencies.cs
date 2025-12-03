@@ -24,6 +24,8 @@ public static class BllLayerDependencies
         services.AddTransient<ITablewareService, TablewareService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IWaiterService, WaiterService>();
+        services.AddTransient<IPostService, PostService>();
+        services.AddTransient<IMistralAIService, MistralAIService>();
 
     }
 }

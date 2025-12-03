@@ -61,11 +61,7 @@ module.exports = {
     },
     port: 8081,
     server: {
-      type: "https",
-      options: {
-        key: "./certs/cert.key",
-        cert: "./certs/cert.crt",
-      },
+      type: "http",
     },
   },
 };

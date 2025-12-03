@@ -17,6 +17,7 @@ using Tempo_API.DTOs.TablewareDishDtos;
 using Tempo_API.DTOs.TablewareDtos;
 using Tempo_API.DTOs.UserDtos;
 using Tempo_API.DTOs.WaiterDtos;
+using Tempo_API.DTOs.PostDtos;
 using Tempo_BLL.Models;
 
 namespace Tempo_API.Mapper;
@@ -91,5 +92,8 @@ public class ApiMapperProfile : Profile
 
         CreateMap<DrinkOrderModel, DrinkOrderDto>().ReverseMap();
         CreateMap<DishOrderModel, DishOrderDto>().ReverseMap();
+
+        CreateMap<PostModel, PostDto>().ReverseMap();
+        CreateMap<CreatePostModel, CreatePostDto>().ReverseMap();
     }
 }

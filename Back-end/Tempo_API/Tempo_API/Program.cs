@@ -1,4 +1,5 @@
 using dotenv.net;
+using Microsoft.AspNetCore.Http.Features;
 using Newtonsoft.Json;
 using Tempo_API.DI;
 using Tempo_API.Mapper;
@@ -37,6 +38,14 @@ static class Program
               options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
           });
 
+        // Настройка для загрузки файлов
+        builder.Services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 10485760; // 10 MB
+            options.ValueLengthLimit = int.MaxValue;
+            options.MultipartHeadersLengthLimit = int.MaxValue;
+        });
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -63,6 +72,15 @@ static class Program
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader());
+
+        // Поддержка статических файлов для постов и загруженных изображений
+        app.UseStaticFiles();
+        
+        // Настройка для обслуживания статических файлов из wwwroot
+        if (!Directory.Exists(Path.Combine(builder.Environment.ContentRootPath, "wwwroot")))
+        {
+            Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "wwwroot"));
+        }
 
         app.UseAuthorization();
 

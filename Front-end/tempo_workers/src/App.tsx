@@ -7,39 +7,40 @@ import Header from "./modules/header/Header";
 import Footer from "./modules/footer/Footer";
 import { useGlobalStore } from "./shared/state/globalStore";
 import MainCookPage from "./pages/mainCookPage/mainCookPage";
+import PostPage from "./pages/postPage/PostPage";
 
 const App = () => {
   const { currentUser } = useGlobalStore();
   return (
     <div className="Container">
-      <Header />
       <BrowserRouter>
+        <Header />
         <Routes>
+          <Route path="/" element={<Navigate replace to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
-        </Routes>
-        <Routes>
           <Route path="/AdminPage" element={currentUser ? (
             <MainAdminPage />
           ) : (
             <Navigate replace to={"/login"} />
           )} />
-        </Routes>
-        <Routes>
           <Route path="/WaiterPage" element={currentUser ? (
             <MainWaiterPage />
           ) : (
             <Navigate replace to={"/login"} />
           )} />
-        </Routes>
-        <Routes>
           <Route path="/CookPage" element={currentUser ? (
             <MainCookPage />
           ) : (
             <Navigate replace to={"/login"} />
           )} />
+          <Route path="/PostPage" element={currentUser ? (
+            <PostPage />
+          ) : (
+            <Navigate replace to={"/login"} />
+          )} />
         </Routes>
+        <Footer />
       </BrowserRouter>
-      <Footer />
     </div>
   );
 };

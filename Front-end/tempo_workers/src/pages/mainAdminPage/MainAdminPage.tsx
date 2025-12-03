@@ -13,14 +13,17 @@ import PeopleIcon from '@mui/icons-material/People';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import CoffeeRoundedIcon from '@mui/icons-material/CoffeeRounded';
 import KitchenRoundedIcon from '@mui/icons-material/KitchenRounded';
+import InstagramIcon from '@mui/icons-material/Instagram';
 import { useGlobalStore } from '../../shared/state/globalStore';
 import MainModule from '../../modules/mainModule/MainModule';
 import EmployeeType from '../../shared/types/employee';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function NestedList() {
   const { cooks, fetchCooks } = useGlobalStore();
   const { waiters, fetchWaiters } = useGlobalStore();
+  const navigate = useNavigate();
 
   const [limit, setLimit] = React.useState(5);
   const [page, setPage] = React.useState(1);
@@ -126,6 +129,14 @@ export default function NestedList() {
               <KitchenRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Ингредиенты" />
+          </ListItemButton>
+
+          <ListItemButton 
+            onClick={() => navigate('/PostPage')}>
+            <ListItemIcon>
+              <InstagramIcon />
+            </ListItemIcon>
+            <ListItemText primary="AI Посты" />
           </ListItemButton>
         </List>
 
