@@ -1,38 +1,188 @@
-html, body{
-    margin: 0;
-    height: 100%;
-    color: #fff;
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+// Bootstrap imports
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+// Custom variables
+@import "./shared/styles/_variables";
+
+// Override Bootstrap variables
+$primary: $primary-color;
+$secondary: $secondary-color;
+$body-bg: $light-bg;
+$body-color: $text-dark;
+
+// Continue Bootstrap imports
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/bootstrap";
+
+// Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+// Global styles
+* {
+  box-sizing: border-box;
 }
 
-.Container{
-    margin: 0 auto;
-    background-color: #e6e1a4;
-    position: relative;
-    min-height: 100%;
-    height: fit-content;
-    display: flex;
-    text-align: center;
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: $font-family-sans;
+  color: $text-dark;
+  background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e3 100%);
+  overflow-x: hidden;
 }
 
-#content{
-    color: #000;
-    display: flex;
-    align-self: center;
-    width: 100%;
-    height: 87%;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-#root{
-    height: 100%;
+// Main container
+.Container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e3 100%);
+  position: relative;
 }
 
-.text-input{
-    background-color: #fff;
-    border-radius: 0.3rem;
+// Content area
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  margin-top: 80px; // Space for header
+  margin-bottom: 60px; // Space for footer
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-#button{
-    background-color: #ef7f1a;
-    border-radius: 0.2rem;
+// Form inputs
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 2px solid $border-color;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: white;
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.25);
+    background-color: white;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+}
+
+// Buttons
+.btn {
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: none;
+  font-family: $font-family-sans;
+  
+  &.btn-primary {
+    background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+    color: $text-dark;
+    box-shadow: 0 4px 15px rgba($primary-color, 0.3);
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($primary-color, 0.4);
+      background: linear-gradient(135deg, mix(white, $primary-color, 5%) 0%, mix(white, $accent-color, 5%) 100%);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  &.btn-outline-primary {
+    border: 2px solid $primary-color;
+    color: $primary-color;
+    background: transparent;
+    
+    &:hover {
+      background: $primary-color;
+      color: $text-dark;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba($primary-color, 0.3);
+    }
+  }
+  
+  &.btn-secondary {
+    background: linear-gradient(135deg, $secondary-color 0%, darken($secondary-color, 10%) 100%);
+    color: $text-light;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba($secondary-color, 0.4);
+    }
+  }
+}
+
+// Cards
+.card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: white;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Text utilities
+.text-elegant {
+  font-family: $font-family-base;
+  font-weight: 600;
+}
+
+.text-gold {
+  color: $primary-color;
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  #content {
+    padding: 1rem 0.5rem;
+    margin-top: 70px;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
 }

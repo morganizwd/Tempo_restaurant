@@ -1,31 +1,16 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  FormControl,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
-} from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Button, Modal, Form } from "react-bootstrap";
+import { Pencil, Trash } from "react-bootstrap-icons";
+import DataGrid, { Column } from "../../shared/components/DataGrid/DataGrid";
 import DishesType from "../../shared/types/dishes";
 import PaginatedType from "../../shared/types/paginatedModel";
 import { useGlobalStore } from "../../shared/state/globalStore";
+import "./DishesDataGrid.scss";
 
 interface Props {
   dishes: PaginatedType<DishesType>;
   limit: number;
-  handleLimitChange: (event: SelectChangeEvent) => void;
+  handleLimitChange: (limit: number) => void;
   page: number;
   setPage: (value: number) => void;
   handleEdit: (id: string, data: Partial<DishesType>) => void;
@@ -48,13 +33,13 @@ const DishesDataGrid = ({
   const [editId, setEditId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => { fetchCategory() },
-    []
-  )
+  useEffect(() => {
+    fetchCategory();
+  }, []);
 
-  const handleOpenEditDialog = (id: string, data: DishesType) => {
-    setEditId(id);
-    setNewDishes(data);
+  const handleOpenEditDialog = (row: DishesType) => {
+    setEditId(row.id);
+    setNewDishes(row);
     setOpenEdit(true);
   };
 
@@ -65,7 +50,6 @@ const DishesDataGrid = ({
   };
 
   const handleSave = async () => {
-    console.log(editId);
     if (editId) {
       await updateDishes(editId, newDishes);
     }
@@ -89,196 +73,155 @@ const DishesDataGrid = ({
     handleCloseDelete();
   };
 
-  const handleCategoryChange = (event: SelectChangeEvent) => {
-    setNewDishes({ ...newDishes, categoryId: event.target.value })
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setNewDishes({ ...newDishes, categoryId: event.target.value });
   };
 
-  const renderCategory = () => {
-    const items: any[] = [];
-    for (let i in Category.items) {
-      let value = Category.items[i];
-      if (value == null) {
-        continue;
-      }
-      items.push(
-        <MenuItem
-          key={`${value.id}`}
-          value={value.id}
-        >{`${value.name}`}</MenuItem>
-      )
-    }
-    return items;
-  }
-
-  const columns: GridColDef<DishesType[][number]>[] = [
+  const columns: Column<DishesType>[] = [
     {
       field: "name",
       headerName: "Имя",
       width: 180,
-      editable: false,
+      renderCell: ({ value }) => value || "",
     },
     {
       field: "approx_time",
       headerName: "Приблизительное время",
       width: 180,
-      editable: false,
+      renderCell: ({ value }) => `${value} мин` || "",
     },
     {
       field: "price",
       headerName: "Цена",
       width: 180,
-      editable: false,
+      renderCell: ({ value }) => `${value} р` || "",
     },
     {
       field: "category",
       headerName: "Категория",
-      renderCell: (params) => { if (params.row.category) return params.row.category.name },
       width: 180,
-      editable: false,
-    },
-    {
-      field: "actions",
-      headerName: "Действия",
-      width: 190,
-      renderCell: (params) => (
-        <>
-          <Button
-            style={{ marginRight: "0.5rem" }}
-            color="success"
-            variant="contained"
-            id="actionButton"
-            onClick={() =>
-              handleOpenEditDialog(params.id as string, params.row)
-            }
-          >
-            <EditIcon />
-          </Button>
-          <Button
-            color="error"
-            onClick={() => handleOpenDeleteDialog(params.id as string)}
-            variant="contained"
-            id="actionButton"
-          >
-            <DeleteIcon />
-          </Button>
-        </>
-      ),
+      renderCell: ({ row }) => row.category?.name || "",
     },
   ];
 
+  const renderActions = (row: DishesType) => (
+    <div className="action-buttons">
+      <Button
+        variant="success"
+        size="sm"
+        onClick={() => handleOpenEditDialog(row)}
+        className="me-2"
+      >
+        <Pencil />
+      </Button>
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={() => handleOpenDeleteDialog(row.id)}
+      >
+        <Trash />
+      </Button>
+    </div>
+  );
+
   return (
     <>
-      <div>
-        <DataGrid
-          rows={dishes ? dishes.items : []}
-          columns={columns}
-          disableRowSelectionOnClick
-          hideFooter={true}
-        />
-      </div>
-      <div id="pagination-size-control">
-        <p>Размер страницы:</p>
-        <FormControl variant="standard">
-          <Select
-            className="text-input"
-            value={limit.toString()}
-            onChange={handleLimitChange}
-          >
-            <MenuItem key={5} value={5}>
-              5
-            </MenuItem>
-            <MenuItem key={10} value={10}>
-              10
-            </MenuItem>
-          </Select>
-        </FormControl>
-        <p id="total_data">Всего записей: {dishes ? dishes.total : 0}</p>
-        <div id="pagination-control">
-          <Button variant="contained" onClick={() => setPage(1)}>
-            <KeyboardDoubleArrowLeftIcon />
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setPage(Math.max(1, page - 1))}
-          >
-            <KeyboardArrowLeftIcon />
-          </Button>
-          <p>
-            {dishes ? dishes.page : 0} .. {dishes ? dishes.pageCount : 0}
-          </p>
-          <Button
-            variant="contained"
-            onClick={() => setPage(Math.min(dishes.pageCount, page + 1))}
-          >
-            <KeyboardArrowRightIcon />
-          </Button>
-          <Button variant="contained" onClick={() => setPage(dishes.pageCount)}>
-            <KeyboardDoubleArrowRightIcon />
-          </Button>
-        </div>
-      </div>
+      <DataGrid
+        rows={dishes ? dishes.items : []}
+        columns={columns}
+        page={page}
+        pageCount={dishes?.pageCount || 1}
+        total={dishes?.total || 0}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={handleLimitChange}
+        getRowId={(row) => row.id}
+        actions={renderActions}
+      />
 
-      <Dialog open={openEdit} onClose={handleCloseEdit}>
-        <DialogTitle>Редактировать блюдо</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Имя"
-            fullWidth
-            value={newDishes.name}
-            onChange={(e) =>
-              setNewDishes({ ...newDishes, name: e.target.value })
-            }
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Приблизительное время"
-            fullWidth
-            value={newDishes.approx_time}
-            onChange={(e) =>
-              setNewDishes({ ...newDishes, approx_time: Number(e.target.value) })
-            }
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Цена"
-            fullWidth
-            value={newDishes.price}
-            onChange={(e) =>
-              setNewDishes({ ...newDishes, price: e.target.value })
-            }
-          />
-          <FormControl fullWidth variant="standard">
-            <Select
-              className="text-input"
-              value={newDishes.categoryId ?? ""}
-              onChange={handleCategoryChange}
-            >
-              {renderCategory()}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit}>Отмена</Button>
-          <Button onClick={handleSave}>Сохранить</Button>
-        </DialogActions>
-      </Dialog>
+      <Modal show={openEdit} onHide={handleCloseEdit} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Редактировать блюдо</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Имя</Form.Label>
+              <Form.Control
+                type="text"
+                value={newDishes.name || ""}
+                onChange={(e) =>
+                  setNewDishes({ ...newDishes, name: e.target.value })
+                }
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Приблизительное время</Form.Label>
+              <Form.Control
+                type="number"
+                value={newDishes.approx_time || ""}
+                onChange={(e) =>
+                  setNewDishes({
+                    ...newDishes,
+                    approx_time: Number(e.target.value),
+                  })
+                }
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Цена</Form.Label>
+              <Form.Control
+                type="text"
+                value={newDishes.price || ""}
+                onChange={(e) =>
+                  setNewDishes({ ...newDishes, price: e.target.value })
+                }
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Категория</Form.Label>
+              <Form.Select
+                value={newDishes.categoryId || ""}
+                onChange={handleCategoryChange}
+              >
+                <option value="">Выберите категорию</option>
+                {Category.items
+                  .filter((item) => item != null)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+              </Form.Select>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={handleCloseEdit}>
+            Отмена
+          </Button>
+          <Button variant="primary" onClick={handleSave}>
+            Сохранить
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-      <Dialog open={openDelete} onClose={handleCloseDelete}>
-        <DialogTitle>Подтверждение удаления</DialogTitle>
-        <DialogContent>
-          <p>Вы уверены, что хотите удалить этого сотрудника?</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDelete}>Отмена</Button>
-          <Button color="error" onClick={handleConfirmDelete}>
+      <Modal show={openDelete} onHide={handleCloseDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Подтверждение удаления</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Вы уверены, что хотите удалить это блюдо?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-secondary" onClick={handleCloseDelete}>
+            Отмена
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete}>
             Удалить
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

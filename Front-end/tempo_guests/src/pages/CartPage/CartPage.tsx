@@ -1,140 +1,154 @@
 import React, { useEffect, useState } from "react";
+import { Container, Form, Button, InputGroup } from "react-bootstrap";
+import { Plus, Dash, CartCheck } from "react-bootstrap-icons";
 import "./CartPage.scss";
-import {
-  Button,
-  Container,
-  FormControl,
-  IconButton,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  InputLabel,
-} from "@mui/material";
 import Header from "../../modules/header/Header";
 import Footer from "../../modules/footer/Footer";
 import { useGlobalStore } from "../../shared/state/globalStore";
 import CartItemComponent from "../../components/CartComponents/CartItemComponent/CartItemComponent";
-import AddIcon from "@mui/icons-material/Add";
-import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 
 const CartPage = () => {
-  let { cart, countPrice, countTime, tables, fetchTables, postOrder } =
+  const { cart, countPrice, countTime, tables, fetchTables, postOrder } =
     useGlobalStore();
   const [peopleNumber, setPeopleNumber] = useState(1);
+  const [table, setTable] = useState("");
 
   useEffect(() => {
     fetchTables();
   }, []);
 
-  const [table, setTable] = useState("");
-
-  cart = Object.fromEntries(
+  const sortedCart = Object.fromEntries(
     Object.entries(cart).sort(([a], [b]) => (a > b ? -1 : 1))
   );
 
-  const cartItems = [];
+  const cartItems = Object.keys(sortedCart).map((key) => (
+    <CartItemComponent item={sortedCart[key]} key={key} />
+  ));
 
-  for (let i in cart) {
-    cartItems.push(<CartItemComponent item={cart[i]} key={i} />);
-  }
-
-  const handleNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    let newValue = event.target.value as unknown as number;
-    if (Number.isInteger(newValue)) {
-      if (newValue < 0) {
-        newValue = 0;
-      }
-      setPeopleNumber(newValue);
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = parseInt(event.target.value) || 0;
+    if (newValue < 0) {
+      newValue = 0;
     }
+    setPeopleNumber(newValue);
   };
 
-  const handleTableChange = (event: SelectChangeEvent) => {
+  const handleIncrement = () => {
+    setPeopleNumber((prev) => prev + 1);
+  };
+
+  const handleDecrement = () => {
+    setPeopleNumber((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleTableChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setTable(event.target.value);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (table !== "") {
+      postOrder(Number.parseInt(table), peopleNumber);
+    }
+  };
+
   return (
-    <Container className="Container">
-      <Header />
+    <Container fluid className="Container cart-page">
       <div id="content">
-        <div id="cart">
-          <p>Корзина</p>
-          {cartItems}
-          <p id="cart_full_price">Итого: {countPrice()}p</p>
-          <div id="people_num">
-            <p>Количество людей:</p>
-            <div>
-              <IconButton
-                id="button"
-                onClick={() => {
-                  let newValue = peopleNumber - 1;
-                  if (newValue < 0) {
-                    newValue = 0;
-                  }
-                  setPeopleNumber(newValue);
-                }}
-              >
-                <HorizontalRuleIcon />
-              </IconButton>
-              <TextField
-                type="number"
-                className="text-input "
-                id="cartNum"
-                variant="outlined"
-                value={peopleNumber}
-                onChange={handleNumberChange}
-              />
-              <IconButton
-                id="button"
-                onClick={() => {
-                  let newValue = peopleNumber + 1;
-                  if (newValue < 0) {
-                    newValue = 0;
-                  }
-                  setPeopleNumber(newValue);
-                }}
-              >
-                <AddIcon />
-              </IconButton>
+        <div className="cart-wallpaper">
+          <div className="menu-board">
+            <div id="cart">
+              <div className="cart-header">
+                <h2 className="cart-title">Корзина</h2>
+              </div>
+
+          <div className="cart-items-wrapper">
+            {cartItems.length > 0 ? (
+              cartItems
+            ) : (
+              <div className="empty-cart">
+                <CartCheck className="empty-cart-icon" />
+                <p>Ваша корзина пуста</p>
+              </div>
+            )}
+          </div>
+
+          {cartItems.length > 0 && (
+            <>
+              <div className="cart-summary">
+                <div className="summary-row">
+                  <span className="summary-label">Итого:</span>
+                  <span className="summary-value">{countPrice()} р</span>
+                </div>
+                <div className="summary-row">
+                  <span className="summary-label">Примерное время готовности:</span>
+                  <span className="summary-value">{countTime()} мин</span>
+                </div>
+              </div>
+
+              <Form onSubmit={handleSubmit} className="cart-form-section">
+                <Form.Group className="mb-4">
+                  <Form.Label>Количество людей</Form.Label>
+                  <div className="people-number-control">
+                    <div className="quantity-control">
+                      <Button
+                        variant="outline-secondary"
+                        onClick={handleDecrement}
+                        disabled={peopleNumber === 0}
+                      >
+                        <Dash />
+                      </Button>
+                      <Form.Control
+                        type="number"
+                        value={peopleNumber}
+                        onChange={handleNumberChange}
+                        min="0"
+                        className="text-center"
+                      />
+                      <Button variant="outline-secondary" onClick={handleIncrement}>
+                        <Plus />
+                      </Button>
+                    </div>
+                  </div>
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Label>Выберите стол</Form.Label>
+                  <div className="table-select-wrapper">
+                    <Form.Select
+                      value={table}
+                      onChange={handleTableChange}
+                      required
+                    >
+                      <option value="">Выберите стол...</option>
+                      {tables.map((tableItem, i) => (
+                        <option key={tableItem.id} value={`${i}`}>
+                          Стол №{tableItem.number} на {tableItem.max_people} человек
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </div>
+                </Form.Group>
+
+                <div className="submit-button-wrapper">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={table === ""}
+                    className="d-flex align-items-center justify-content-center gap-2 mx-auto"
+                  >
+                    <CartCheck size={20} />
+                    Оформить заказ
+                  </Button>
+                </div>
+              </Form>
+            </>
+          )}
             </div>
           </div>
-          <p id="cart_full_time">
-            Примерное время готовности заказа: {countTime()}
-          </p>
-          <div id="cart_table_select">
-            <p>Стол:</p>
-            <FormControl fullWidth variant="standard">
-              <Select
-                className="text-input"
-                value={table}
-                label="Age"
-                onChange={handleTableChange}
-              >
-                {tables.map((value, i) => {
-                  return (
-                    <MenuItem
-                      key={value.id}
-                      value={`${i}`}
-                    >{`Стол №${value.number} на ${value.max_people} человек`}</MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-          </div>
-          <Button
-            id="button"
-            variant="contained"
-            onClick={() => {
-              postOrder(Number.parseInt(table), peopleNumber);
-            }}
-          >
-            Оформить заказ
-          </Button>
         </div>
       </div>
-      <Footer />
     </Container>
   );
 };

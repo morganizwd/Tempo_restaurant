@@ -1,27 +1,40 @@
 import React from "react";
+import { Navbar, Container } from "react-bootstrap";
+import { EggFried, PersonCircle } from "react-bootstrap-icons";
 import "./Header.scss";
-import LocalPizzaIcon from "@mui/icons-material/LocalPizza";
 import { resetGlobalStore, useGlobalStore } from "../../shared/state/globalStore";
-import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const {currentUser} = useGlobalStore();
+  const { currentUser } = useGlobalStore();
+  const navigate = useNavigate();
 
   return (
     <div id="header">
-      <LocalPizzaIcon id="logo" />
-      {currentUser ? (
-        <div
-          id="header_profile"
-          onClick={() => {
-            resetGlobalStore();
-          }}
-        >
-          <AccountCircleRoundedIcon id="icon" /> <p>Выйти</p>
-        </div>
-      ) : (
-        <></>
-      )}
+      <Navbar expand="lg" className="navbar">
+        <Container fluid>
+          <Navbar.Brand 
+            onClick={() => navigate("/AdminPage")}
+            className="navbar-brand"
+          >
+            <EggFried className="logo-icon" />
+            <span>Tempo</span>
+          </Navbar.Brand>
+          
+          {currentUser && (
+            <div
+              id="header_profile"
+              onClick={() => {
+                resetGlobalStore();
+                navigate("/login");
+              }}
+            >
+              <PersonCircle className="profile-icon" />
+              <p>Выйти</p>
+            </div>
+          )}
+        </Container>
+      </Navbar>
     </div>
   );
 };

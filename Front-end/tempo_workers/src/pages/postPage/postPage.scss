@@ -1,6 +1,85 @@
-.post-page {
-  padding: 20px;
-  max-width: 1400px;
+@use "sass:color";
+@import "../../shared/styles/_variables";
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&display=swap");
+
+.post-page-wrapper {
+  background:
+    radial-gradient(120% 120% at 10% 20%, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(90% 90% at 90% 10%, rgba(255, 255, 255, 0.06), transparent),
+    linear-gradient(180deg, #b7441b 0%, #8e2d0f 45%, #7a2409 100%);
+  min-height: 100vh;
+  padding: 2.5rem 0 3rem;
+}
+
+.post-wallpaper {
+  padding: 0 1rem;
+  max-width: 1800px;
   margin: 0 auto;
+}
+
+.menu-board {
+  background: #fff8ed;
+  border: 1px solid #f0e3ce;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.post-page {
+  padding: 2.5rem;
+  max-width: 100%;
+  margin: 0;
+  background: #fff8ed;
+
+  // Стили для карточек постов
+  .MuiCard-root {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .MuiCardMedia-root {
+    border-radius: 8px 8px 0 0;
+  }
+
+  // Стили для Grid контейнера - используем CSS Grid для более надежного отображения
+  .MuiGrid-container {
+    display: grid !important;
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 24px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    
+    @media (min-width: 600px) {
+      grid-template-columns: repeat(2, 1fr) !important; // sm: 2 карточки в ряд
+    }
+    
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(3, 1fr) !important; // md: 3 карточки в ряд
+    }
+    
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr) !important; // lg: 4 карточки в ряд
+    }
+  }
+
+  // Стили для Grid элементов (карточек)
+  .MuiGrid-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+  }
+
+  // Стили для карточек
+  .MuiCard-root {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 

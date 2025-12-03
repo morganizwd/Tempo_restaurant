@@ -1,13 +1,210 @@
-#login-form{
-    height: fit-content;
-    margin: 15rem auto;
-    padding: 0.5rem;
-    align-self: center;
-    width: 90%;
+@use "sass:color";
+@import "../../shared/styles/_variables";
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&display=swap");
+
+.login-page {
+  background:
+    radial-gradient(120% 120% at 10% 20%, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(90% 90% at 90% 10%, rgba(255, 255, 255, 0.06), transparent),
+    linear-gradient(180deg, #b7441b 0%, #8e2d0f 45%, #7a2409 100%);
+  min-height: 100vh;
+  padding: 2.5rem 0 3rem;
+
+  #content {
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1320px;
+  }
 }
 
-#login-form > *{
-    display: flex;
-    margin: auto;
+.login-wallpaper {
+  padding: 0 1.5rem;
+}
+
+.menu-board {
+  background: #fff8ed;
+  border: 1px solid #f0e3ce;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+#login-form {
+  width: 100%;
+  padding: 3rem 2.5rem;
+  background: #fff8ed;
+  animation: fadeIn 0.8s ease-out;
+  
+  .login-title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: $primary-color;
+    text-align: center;
     margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .login-subtitle {
+    text-align: center;
+    color: #8a6750;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #4a3219;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: "Bebas Neue", sans-serif;
+  }
+  
+  .form-control {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    border: 1px solid #f0e3ce;
+    background: #fffdf8;
+    color: #3c2816;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    
+    &:focus {
+      border-color: $primary-color;
+      background: white;
+      box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.15);
+    }
+
+    &::placeholder {
+      color: #8a6750;
+    }
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    
+    &.btn-primary {
+      background: $primary-color;
+      border: none;
+      color: $text-light;
+      box-shadow: 0 10px 18px rgba($primary-color, 0.32);
+      
+      &:hover:not(:disabled) {
+        background: color.adjust($primary-color, $lightness: -8%);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    &.btn-outline-primary {
+      border: 2px solid $primary-color;
+      color: $primary-color;
+      background: transparent;
+      
+      &:hover {
+        background: $primary-color;
+        color: $text-light;
+      }
+    }
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .phone-input-wrapper {
+    margin-bottom: 1.5rem;
+    
+    .PhoneInput {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      
+      .PhoneInputInput {
+        flex: 1;
+        border-radius: 8px;
+        border: 1px solid #f0e3ce;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #fffdf8;
+        color: #3c2816;
+        width: 100%;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+          background: white;
+          box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.15);
+        }
+
+        &::placeholder {
+          color: #8a6750;
+        }
+      }
+      
+      .PhoneInputCountry {
+        margin-right: 0.5rem;
+        
+        .PhoneInputCountryIcon {
+          border-radius: 4px;
+        }
+        
+        .PhoneInputCountrySelect {
+          border: none;
+          background: transparent;
+          padding: 0.5rem;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 992px) {
+  .login-page {
+    padding: 1.5rem 0 2rem;
+  }
+
+  .login-wallpaper {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  #login-form {
+    padding: 2rem 1.5rem;
+
+    .login-title {
+      font-size: 2rem;
+    }
+  }
 }

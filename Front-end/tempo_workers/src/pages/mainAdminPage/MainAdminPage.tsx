@@ -1,28 +1,24 @@
 import * as React from 'react';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Nav, Card } from 'react-bootstrap';
+import { 
+  People, 
+  CupHot, 
+  Wrench, 
+  Image,
+  PersonBadge,
+  EggFried
+} from 'react-bootstrap-icons';
 import Header from "../../modules/header/Header";
 import Footer from "../../modules/footer/Footer";
 import "./mainAdminPage.scss";
-import PeopleIcon from '@mui/icons-material/People';
-import LunchDiningIcon from '@mui/icons-material/LunchDining';
-import CoffeeRoundedIcon from '@mui/icons-material/CoffeeRounded';
-import KitchenRoundedIcon from '@mui/icons-material/KitchenRounded';
-import InstagramIcon from '@mui/icons-material/Instagram';
 import { useGlobalStore } from '../../shared/state/globalStore';
 import MainModule from '../../modules/mainModule/MainModule';
 import EmployeeType from '../../shared/types/employee';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function NestedList() {
-  const { cooks, fetchCooks } = useGlobalStore();
-  const { waiters, fetchWaiters } = useGlobalStore();
+export default function MainAdminPage() {
+  const { cooks, fetchCooks, waiters, fetchWaiters } = useGlobalStore();
   const navigate = useNavigate();
 
   const [limit, setLimit] = React.useState(5);
@@ -33,117 +29,142 @@ export default function NestedList() {
     fetchWaiters(page, limit);
   }, [page, limit]);
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
-
+  const [selectedIndex, setSelectedIndex] = useState(1);
   const [openEmployees, setOpenEmployees] = useState(false);
   const [openDishes, setOpenDishes] = useState(false);
 
-  const handleToggleEmployees = () => {
-    setOpenEmployees(!openEmployees);
-  };
-
-  const handleToggleDishes = () => {
-    setOpenDishes(!openDishes);
-  };
-
-  const handleListItemClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    index: number
-  ) => {
+  const handleListItemClick = (index: number) => {
     setSelectedIndex(index);
   };
 
+  const menuItems = [
+    {
+      id: 1,
+      label: "Повара",
+      icon: PersonBadge,
+      parent: "employees",
+      onClick: () => handleListItemClick(1)
+    },
+    {
+      id: 2,
+      label: "Официанты",
+      icon: PersonBadge,
+      parent: "employees",
+      onClick: () => handleListItemClick(2)
+    },
+    {
+      id: 3,
+      label: "Блюда",
+      icon: EggFried,
+      parent: "dishes",
+      onClick: () => handleListItemClick(3)
+    },
+    {
+      id: 4,
+      label: "Ингредиенты",
+      icon: Wrench,
+      parent: "dishes",
+      onClick: () => handleListItemClick(4)
+    },
+    {
+      id: 5,
+      label: "Напитки",
+      icon: CupHot,
+      onClick: () => handleListItemClick(5)
+    },
+    {
+      id: 6,
+      label: "Ингредиенты",
+      icon: Wrench,
+      onClick: () => handleListItemClick(6)
+    },
+    {
+      id: 7,
+      label: "AI Посты",
+      icon: Image,
+      onClick: () => navigate('/PostPage')
+    }
+  ];
+
   return (
-      <div id="content">
-        <List sx={{ width: '30%', maxWidth: 360 }}>
-          <ListItemButton onClick={handleToggleEmployees}>
-            <ListItemIcon>
-              <PeopleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Сотрудники" />
-            {openEmployees ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={openEmployees} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton
-                sx={{ pl: 4 }}
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-              >
-                <ListItemText primary="Повара" />
-              </ListItemButton>
-              <ListItemButton
-                sx={{ pl: 4 }}
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-              >
-                <ListItemText primary="Официанты" />
-              </ListItemButton>
-            </List>
-          </Collapse>
+    <div className="dishes-wallpaper">
+      <div className="menu-board">
+        <Header />
+        <div id="content">
+            <Card className="sidebar-card">
+          <Card.Body className="p-0">
+            <Nav className="flex-column sidebar-nav">
+              <Nav.Item className="sidebar-section">
+                <Nav.Link 
+                  className="sidebar-section-header"
+                  onClick={() => setOpenEmployees(!openEmployees)}
+                >
+                  <People className="me-2" />
+                  <span>Сотрудники</span>
+                  <span className="ms-auto">{openEmployees ? '−' : '+'}</span>
+                </Nav.Link>
+                {openEmployees && (
+                  <div className="sidebar-submenu">
+                    {menuItems.filter(item => item.parent === "employees").map(item => (
+                      <Nav.Link
+                        key={item.id}
+                        className={`sidebar-item ${selectedIndex === item.id ? 'active' : ''}`}
+                        onClick={item.onClick}
+                      >
+                        <item.icon className="me-2" />
+                        {item.label}
+                      </Nav.Link>
+                    ))}
+                  </div>
+                )}
+              </Nav.Item>
 
-          {/* Блюда */}
-          <ListItemButton onClick={handleToggleDishes}>
-            <ListItemIcon>
-              <LunchDiningIcon />
-            </ListItemIcon>
-            <ListItemText primary="Блюда" />
-            {openDishes ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-          <Collapse in={openDishes} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItemButton
-                sx={{ pl: 4 }}
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
-              >
-                <ListItemText primary="Блюда" />
-              </ListItemButton>
-              <ListItemButton
-                sx={{ pl: 4 }}
-                selected={selectedIndex === 4}
-                onClick={(event) => handleListItemClick(event, 4)}
-              >
-                <ListItemText primary="Ингредиенты" />
-              </ListItemButton>
-            </List>
-          </Collapse>
+              <Nav.Item className="sidebar-section">
+                <Nav.Link 
+                  className="sidebar-section-header"
+                  onClick={() => setOpenDishes(!openDishes)}
+                >
+                  <EggFried className="me-2" />
+                  <span>Блюда</span>
+                  <span className="ms-auto">{openDishes ? '−' : '+'}</span>
+                </Nav.Link>
+                {openDishes && (
+                  <div className="sidebar-submenu">
+                    {menuItems.filter(item => item.parent === "dishes").map(item => (
+                      <Nav.Link
+                        key={item.id}
+                        className={`sidebar-item ${selectedIndex === item.id ? 'active' : ''}`}
+                        onClick={item.onClick}
+                      >
+                        <item.icon className="me-2" />
+                        {item.label}
+                      </Nav.Link>
+                    ))}
+                  </div>
+                )}
+              </Nav.Item>
 
-          <ListItemButton selected={selectedIndex === 5}
-            onClick={(event) => handleListItemClick(event, 5)}>
-            <ListItemIcon>
-              <CoffeeRoundedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Напитки" />
-          </ListItemButton>
+              {menuItems.filter(item => !item.parent).map(item => (
+                <Nav.Item key={item.id}>
+                  <Nav.Link
+                    className={`sidebar-item ${selectedIndex === item.id ? 'active' : ''}`}
+                    onClick={item.onClick}
+                  >
+                    <item.icon className="me-2" />
+                    {item.label}
+                  </Nav.Link>
+                </Nav.Item>
+              ))}
+            </Nav>
+          </Card.Body>
+        </Card>
 
-          <ListItemButton selected={selectedIndex === 6}
-            onClick={(event) => handleListItemClick(event, 6)}>
-            <ListItemIcon>
-              <KitchenRoundedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Ингредиенты" />
-          </ListItemButton>
-
-          <ListItemButton 
-            onClick={() => navigate('/PostPage')}>
-            <ListItemIcon>
-              <InstagramIcon />
-            </ListItemIcon>
-            <ListItemText primary="AI Посты" />
-          </ListItemButton>
-        </List>
-
-        <div style={{ width: '70%' }}>
-          <MainModule selectedIndex={selectedIndex} />
+          <div className="main-content">
+            <MainModule selectedIndex={selectedIndex} />
+          </div>
         </div>
-
+        <Footer />
       </div>
+    </div>
   );
 }

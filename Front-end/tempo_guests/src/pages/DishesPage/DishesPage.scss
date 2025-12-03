@@ -1,9 +1,473 @@
-#menu{
-    align-self: center;
-    margin: 2rem auto;
-    margin-bottom: 3.5rem;    
+@use "sass:color";
+@import "../../shared/styles/_variables";
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&display=swap");
 
-    & > #button{
-        margin-top: 0.5rem;
+.dishes-page {
+  background:
+    radial-gradient(120% 120% at 10% 20%, rgba(255, 255, 255, 0.08), transparent),
+    radial-gradient(90% 90% at 90% 10%, rgba(255, 255, 255, 0.06), transparent),
+    linear-gradient(180deg, #b7441b 0%, #8e2d0f 45%, #7a2409 100%);
+  min-height: 100vh;
+  padding: 2.5rem 0 3rem;
+
+  #content {
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1600px;
+  }
+}
+
+.dishes-wallpaper {
+  padding: 0 1.5rem;
+}
+
+.menu-board {
+  background: #fff8ed;
+  border: 1px solid #f0e3ce;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.board-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 2.5rem 0.5rem;
+  color: $primary-color;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  .nav-brand {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+    cursor: pointer;
+
+    .brand-mark {
+      font-family: "Archivo Black", "Playfair Display", serif;
+      font-size: 1.3rem;
+      color: #ff5a00;
+      line-height: 1;
     }
+
+    .brand-wordmark {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.14em;
+      margin-bottom: -0.1rem;
+    }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.35rem;
+    flex-wrap: wrap;
+
+    button {
+      background: none;
+      border: none;
+      color: $primary-color;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.14em;
+      padding: 0.35rem 0;
+      position: relative;
+      text-transform: uppercase;
+      cursor: pointer;
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        width: 100%;
+        height: 2px;
+        background: transparent;
+        transition: background 0.2s ease;
+      }
+
+      &:hover::after {
+        background: $primary-color;
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    .nav-user {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #5c3921;
+      background: rgba($primary-color, 0.1);
+      border-radius: 20px;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+
+      &:hover {
+        background: rgba($primary-color, 0.18);
+        transform: translateY(-1px);
+      }
+    }
+
+    .nav-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba($primary-color, 0.25);
+      background: rgba($primary-color, 0.08);
+      color: $primary-color;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $primary-color;
+        color: $text-light;
+        border-color: $primary-color;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.hero-section {
+  text-align: center;
+  padding: 1.5rem 2.5rem 2.2rem;
+  background: #fff8ed;
+
+  .hero-logo {
+    font-family: "Archivo Black", "Bebas Neue", sans-serif;
+    font-size: clamp(4rem, 10vw, 7.5rem);
+    letter-spacing: 0.14em;
+    color: $primary-color;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .hero-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 2rem auto 1rem;
+
+    .info-item {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: left;
+
+      .info-icon {
+        font-size: 1.5rem;
+        color: $primary-color;
+        margin-top: 0.1rem;
+      }
+
+      .info-label {
+        font-family: "Bebas Neue", sans-serif;
+        letter-spacing: 0.12em;
+        font-size: 0.95rem;
+        color: #b45d27;
+        text-transform: uppercase;
+      }
+
+      .info-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #4a3219;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+.promo-strip {
+  display: flex;
+  gap: 1.4rem;
+  padding: 0.75rem 2.5rem;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, #fff2e1 0%, #fff9ef 100%);
+  color: $primary-color;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-top: 1px solid #f0e3ce;
+  border-bottom: 1px solid #f0e3ce;
+  font-size: 0.95rem;
+
+  span {
+    white-space: nowrap;
+  }
+}
+
+.promo-gallery {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(230px, 1fr);
+  gap: 0.8rem;
+  padding: 1rem 2.5rem 1.6rem;
+  overflow-x: auto;
+  background: #fff8ed;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary-color, 0.35);
+    border-radius: 4px;
+  }
+
+  .promo-card {
+    position: relative;
+    border-radius: 12px;
+    padding: 1.1rem 1rem;
+    min-height: 150px;
+    border: 1px solid #f0e3ce;
+    color: #4a3219;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+    background: linear-gradient(135deg, #ffe6d0 0%, #ffd6b1 100%);
+
+    &.sunset {
+      background: linear-gradient(135deg, #ffb284 0%, #ffe6cf 100%);
+    }
+
+    &.peach {
+      background: linear-gradient(135deg, #ffd8b5 0%, #fff0df 100%);
+    }
+
+    &.spicy {
+      background: linear-gradient(135deg, #ffc497 0%, #ffe9d7 100%);
+    }
+
+    &.cream {
+      background: linear-gradient(135deg, #ffeede 0%, #fff7ec 100%);
+    }
+
+    .promo-tag {
+      display: inline-block;
+      background: $primary-color;
+      color: $text-light;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+
+    h3 {
+      margin: 0.8rem 0 0.35rem;
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.12em;
+      color: #d34e0f;
+    }
+
+    p {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+  }
+}
+
+.categories-section {
+  padding: 2rem 2.5rem 1.2rem;
+  background: #fff8ed;
+
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: $primary-color;
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    margin: 0;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $primary-color;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+
+    .category-card {
+      background: #fffdf8;
+      border: 1px solid #f0e3ce;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 14px 26px rgba(0, 0, 0, 0.08);
+      transition: transform 0.25s ease;
+
+      &:hover {
+        transform: translateY(-6px);
+      }
+
+      .category-image-wrapper {
+        position: relative;
+        padding-top: 76%;
+        background: #f7e7d2;
+        overflow: hidden;
+
+        .category-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.35s ease;
+        }
+      }
+
+      &:hover .category-image {
+        transform: scale(1.04);
+      }
+
+      .category-button {
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        background: $primary-color;
+        color: $text-light;
+        font-family: "Bebas Neue", sans-serif;
+        letter-spacing: 0.14em;
+        font-size: 1.05rem;
+        padding: 0.9rem;
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
+.popular-strip {
+  margin: 1rem 2.5rem 0;
+  padding: 0.65rem 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: #fff2e1;
+  color: $primary-color;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid #f0e3ce;
+}
+
+.menu-groups {
+  padding: 1.5rem 2.5rem 2.5rem;
+  background: #fff8ed;
+}
+
+.cart-button-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 2.5rem 2.5rem;
+  background: #fff8ed;
+
+  .cart-button {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 18px;
+    background: $primary-color;
+    color: $text-light;
+    border: none;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.14em;
+    font-size: 1.15rem;
+    padding: 1rem 1.25rem;
+    text-transform: uppercase;
+    box-shadow: 0 10px 25px rgba($primary-color, 0.35);
+
+    &:hover {
+      background: color.adjust($primary-color, $lightness: -6%);
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .dishes-page {
+    padding: 1.5rem 0 2rem;
+  }
+
+  .dishes-wallpaper {
+    padding: 0 1rem;
+  }
+
+  .board-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.5rem 0.75rem;
+  }
+
+  .hero-section {
+    padding: 1.5rem 1.5rem 2rem;
+  }
+
+  .promo-strip,
+  .categories-section,
+  .promo-gallery,
+  .cart-button-wrapper {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .menu-groups {
+    padding: 1.25rem 1.5rem 2rem;
+  }
+
+  .popular-strip {
+    margin: 1rem 1.5rem 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .board-nav {
+    .nav-links {
+      gap: 1rem;
+
+      button {
+        letter-spacing: 0.12em;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .hero-section {
+    .hero-logo {
+      font-size: clamp(3rem, 12vw, 4.8rem);
+      letter-spacing: 0.1em;
+    }
+  }
+
+  .categories-section {
+    .section-title {
+      font-size: 2rem;
+      letter-spacing: 0.14em;
+    }
+  }
+
+  .promo-strip,
+  .popular-strip {
+    font-size: 0.9rem;
+    gap: 0.8rem;
+  }
 }

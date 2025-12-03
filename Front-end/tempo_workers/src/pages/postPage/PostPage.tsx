@@ -43,6 +43,7 @@ const PostPage = () => {
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
+  const [imagePrompt, setImagePrompt] = useState<string>(''); // Промпт для генерации изображения
   const [currentTab, setCurrentTab] = useState(0);
   const [openStatsDialog, setOpenStatsDialog] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostDto | null>(null);
@@ -70,6 +71,25 @@ const PostPage = () => {
     // Проверяем через небольшую задержку
     setTimeout(checkPuterLoaded, 1000);
   }, []);
+
+  // Генерируем начальный промпт при выборе блюда
+  useEffect(() => {
+    const generatePrompt = async () => {
+      if (selectedDishId && useAIGeneratedImage && !selectedImageFile) {
+        const selectedDish = Dishes.items?.find((d: DishesType) => d.id === selectedDishId);
+        if (selectedDish && (!imagePrompt || imagePrompt.trim() === '')) {
+          try {
+            const initialPrompt = await generateInitialPrompt(selectedDish.name);
+            setImagePrompt(initialPrompt);
+          } catch (err) {
+            console.error('Ошибка генерации начального промпта:', err);
+          }
+        }
+      }
+    };
+
+    generatePrompt();
+  }, [selectedDishId, useAIGeneratedImage, selectedImageFile]);
 
   const loadPosts = async () => {
     try {
@@ -130,13 +150,15 @@ const PostPage = () => {
     }
   };
 
-  const generateImageWithPuter = async (dishName: string): Promise<File> => {
-    return new Promise(async (resolve, reject) => {
+  // Генерирует начальный промпт на основе названия блюда
+  const generateInitialPrompt = async (dishName: string): Promise<string> => {
+    const translatedDishName = await translateDishName(dishName);
+    return `Beautiful professional food photography of ${translatedDishName}, appetizing, high quality, restaurant style, Instagram worthy`;
+  };
+
+  const generateImageWithPuter = async (prompt: string): Promise<File> => {
+    return new Promise((resolve, reject) => {
       try {
-        // Переводим название блюда на английский
-        const translatedDishName = await translateDishName(dishName);
-        const prompt = `Beautiful professional food photography of ${translatedDishName}, appetizing, high quality, restaurant style, Instagram worthy`;
-        
         // Проверяем, что Puter.js загружен
         if (typeof window === 'undefined') {
           reject(new Error('Окно браузера недоступно'));
@@ -322,20 +344,23 @@ const PostPage = () => {
 
       // Если выбрана генерация через AI
       if (useAIGeneratedImage && !selectedImageFile) {
+        if (!imagePrompt || imagePrompt.trim() === '') {
+          setError('Введите промпт для генерации изображения');
+          setLoading(false);
+          return;
+        }
+
         setGeneratingImage(true);
         try {
-          const selectedDish = Dishes.items?.find((d: DishesType) => d.id === selectedDishId);
-          if (selectedDish) {
-            const generatedFile = await generateImageWithPuter(selectedDish.name);
-            imageFileToSend = generatedFile;
-            
-            // Показываем превью
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(generatedFile);
-          }
+          const generatedFile = await generateImageWithPuter(imagePrompt);
+          imageFileToSend = generatedFile;
+          
+          // Показываем превью
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+          };
+          reader.readAsDataURL(generatedFile);
         } catch (err: any) {
           setError(err.message || 'Ошибка генерации изображения');
           setGeneratingImage(false);
@@ -357,6 +382,7 @@ const PostPage = () => {
       setSelectedImageFile(null);
       setImagePreview(null);
       setUseAIGeneratedImage(true);
+      setImagePrompt('');
       
       await loadPosts();
     } catch (err: any) {
@@ -465,7 +491,10 @@ const PostPage = () => {
   };
 
   return (
-    <div className="post-page">
+    <div className="post-page-wrapper">
+      <div className="post-wallpaper">
+        <div className="menu-board">
+          <div className="post-page">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
           <InstagramIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -505,10 +534,34 @@ const PostPage = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container spacing={3}>
+        <Box sx={{ width: '100%', mt: 2 }}>
+          <Grid 
+            container 
+            spacing={3}
+            sx={{
+              width: '100%',
+              margin: 0,
+              '& > .MuiGrid-item': {
+                padding: '12px !important'
+              }
+            }}
+          >
           {posts.map((post) => (
-            <Grid item xs={12} sm={6} md={4} key={post.id}>
-              <Card>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={4} 
+              lg={3} 
+              key={post.id}
+              sx={{
+                display: 'flex',
+                '& > *': {
+                  width: '100%'
+                }
+              }}
+            >
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', width: '100%' }}>
                 <CardMedia
                   component="img"
                   height="300"
@@ -516,11 +569,11 @@ const PostPage = () => {
                   alt={post.dishName}
                   sx={{ objectFit: 'cover' }}
                 />
-                <CardContent>
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                   <Typography variant="h6" component="h2" gutterBottom>
                     {post.dishName}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: '60px' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: '60px', flexGrow: 1 }}>
                     {post.text}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -574,7 +627,8 @@ const PostPage = () => {
               </Card>
             </Grid>
           ))}
-        </Grid>
+          </Grid>
+        </Box>
       )}
 
           {posts.length === 0 && !loading && (
@@ -658,6 +712,7 @@ const PostPage = () => {
           setSelectedImageFile(null);
           setImagePreview(null);
           setUseAIGeneratedImage(true);
+          setImagePrompt('');
         }} 
         maxWidth="md" 
         fullWidth
@@ -715,6 +770,44 @@ const PostPage = () => {
             </FormControl>
           </Box>
 
+          {useAIGeneratedImage && !selectedImageFile && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Промпт для генерации изображения:
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                value={imagePrompt}
+                onChange={(e) => setImagePrompt(e.target.value)}
+                placeholder="Введите описание изображения на английском языке..."
+                helperText="Опишите, какое изображение вы хотите получить. Промпт будет автоматически переведен на английский, если нужно."
+                sx={{ mb: 1 }}
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={async () => {
+                  if (selectedDishId) {
+                    const selectedDish = Dishes.items?.find((d: DishesType) => d.id === selectedDishId);
+                    if (selectedDish) {
+                      try {
+                        const initialPrompt = await generateInitialPrompt(selectedDish.name);
+                        setImagePrompt(initialPrompt);
+                      } catch (err) {
+                        setError('Ошибка генерации промпта');
+                      }
+                    }
+                  }
+                }}
+                disabled={!selectedDishId}
+              >
+                Сгенерировать промпт автоматически
+              </Button>
+            </Box>
+          )}
+
           {(!useAIGeneratedImage || selectedImageFile) && (
             <Box sx={{ mb: 2 }}>
               <input
@@ -761,6 +854,9 @@ const PostPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

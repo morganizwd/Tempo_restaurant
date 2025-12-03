@@ -6,6 +6,8 @@ import {
   Grid,
   Typography,
   Paper,
+  Button,
+  ButtonGroup,
 } from '@mui/material';
 import {
   LineChart,
@@ -28,6 +30,16 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import CommentIcon from '@mui/icons-material/Comment';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import * as XLSX from 'xlsx';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+// Инициализация pdfMake с шрифтами
+if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
+  (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+}
 
 interface PostDashboardProps {
   posts: PostDto[];
@@ -92,6 +104,203 @@ const PostDashboard: React.FC<PostDashboardProps> = ({ posts }) => {
   const timeSeriesData = getTimeSeriesData();
   const topPostsData = getTopPostsData();
 
+  // Функция экспорта в Excel
+  const exportToExcel = () => {
+    // Создаем новую книгу
+    const wb = XLSX.utils.book_new();
+
+    // Лист 1: Общая статистика
+    const statsData = [
+      ['Метрика', 'Значение'],
+      ['Всего лайков', totalStats.likes],
+      ['Всего просмотров', totalStats.views],
+      ['Всего репостов', totalStats.reposts],
+      ['Всего комментариев', totalStats.comments],
+    ];
+    const ws1 = XLSX.utils.aoa_to_sheet(statsData);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Общая статистика');
+
+    // Лист 2: Динамика за 7 дней
+    const timeData = [
+      ['Дата', 'Просмотры', 'Лайки', 'Комментарии', 'Репосты'],
+      ...timeSeriesData.map((item) => [
+        item.date,
+        item.views,
+        item.likes,
+        item.comments,
+        item.reposts,
+      ]),
+    ];
+    const ws2 = XLSX.utils.aoa_to_sheet(timeData);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Динамика за 7 дней');
+
+    // Лист 3: Топ постов
+    const topPostsDataFull = posts
+      .sort((a, b) => (b.views || 0) - (a.views || 0))
+      .slice(0, 10);
+    const topData = [
+      ['Название блюда', 'Просмотры', 'Лайки', 'Комментарии', 'Репосты', 'Дата создания'],
+      ...topPostsDataFull.map((post) => [
+        post.dishName,
+        post.views || 0,
+        post.likes || 0,
+        post.comments || 0,
+        post.reposts || 0,
+        new Date(post.createdAt).toLocaleDateString('ru-RU'),
+      ]),
+    ];
+    const ws3 = XLSX.utils.aoa_to_sheet(topData);
+    XLSX.utils.book_append_sheet(wb, ws3, 'Топ-10 постов');
+
+    // Лист 4: Все посты
+    const allPostsData = [
+      ['Название блюда', 'Просмотры', 'Лайки', 'Комментарии', 'Репосты', 'Дата создания'],
+      ...posts.map((post) => [
+        post.dishName,
+        post.views || 0,
+        post.likes || 0,
+        post.comments || 0,
+        post.reposts || 0,
+        new Date(post.createdAt).toLocaleDateString('ru-RU'),
+      ]),
+    ];
+    const ws4 = XLSX.utils.aoa_to_sheet(allPostsData);
+    XLSX.utils.book_append_sheet(wb, ws4, 'Все посты');
+
+    // Сохраняем файл
+    const fileName = `Статистика_постов_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  };
+
+  // Функция экспорта в PDF
+  const exportToPDF = () => {
+    const docDefinition: any = {
+      content: [
+        {
+          text: '📊 Отчет по статистике постов',
+          style: 'header',
+        },
+        {
+          text: `Дата создания: ${new Date().toLocaleDateString('ru-RU')}`,
+          style: 'subheader',
+          margin: [0, 0, 0, 15],
+        },
+        {
+          text: 'Общая статистика',
+          style: 'sectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                { text: 'Метрика', style: 'tableHeader' },
+                { text: 'Значение', style: 'tableHeader' },
+              ],
+              ['Всего лайков', totalStats.likes.toLocaleString('ru-RU')],
+              ['Всего просмотров', totalStats.views.toLocaleString('ru-RU')],
+              ['Всего репостов', totalStats.reposts.toLocaleString('ru-RU')],
+              ['Всего комментариев', totalStats.comments.toLocaleString('ru-RU')],
+            ],
+          },
+          margin: [0, 0, 0, 20],
+        },
+        {
+          text: 'Динамика за последние 7 дней',
+          style: 'sectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
+            body: [
+              [
+                { text: 'Дата', style: 'tableHeader' },
+                { text: 'Просмотры', style: 'tableHeader' },
+                { text: 'Лайки', style: 'tableHeader' },
+                { text: 'Комментарии', style: 'tableHeader' },
+                { text: 'Репосты', style: 'tableHeader' },
+              ],
+              ...timeSeriesData.map((item) => [
+                item.date,
+                item.views.toString(),
+                item.likes.toString(),
+                item.comments.toString(),
+                item.reposts.toString(),
+              ]),
+            ],
+          },
+          margin: [0, 0, 0, 20],
+        },
+        {
+          text: 'Топ-10 постов по просмотрам',
+          style: 'sectionHeader',
+          margin: [0, 0, 0, 10],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto', 'auto', 'auto', 'auto'],
+            body: [
+              [
+                { text: 'Название блюда', style: 'tableHeader' },
+                { text: 'Просмотры', style: 'tableHeader' },
+                { text: 'Лайки', style: 'tableHeader' },
+                { text: 'Комментарии', style: 'tableHeader' },
+                { text: 'Репосты', style: 'tableHeader' },
+              ],
+              ...posts
+                .sort((a, b) => (b.views || 0) - (a.views || 0))
+                .slice(0, 10)
+                .map((post) => [
+                  post.dishName.length > 40 ? post.dishName.substring(0, 40) + '...' : post.dishName,
+                  (post.views || 0).toString(),
+                  (post.likes || 0).toString(),
+                  (post.comments || 0).toString(),
+                  (post.reposts || 0).toString(),
+                ]),
+            ],
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          alignment: 'left',
+          margin: [0, 0, 0, 10],
+        },
+        subheader: {
+          fontSize: 12,
+          alignment: 'left',
+        },
+        sectionHeader: {
+          fontSize: 16,
+          bold: true,
+          alignment: 'left',
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 10,
+          color: 'white',
+          fillColor: '#ff6b35',
+          alignment: 'center',
+        },
+      },
+      defaultStyle: {
+        font: 'Roboto',
+        fontSize: 10,
+      },
+    };
+
+    pdfMake.createPdf(docDefinition).download(
+      `Статистика_постов_${new Date().toISOString().split('T')[0]}.pdf`
+    );
+  };
+
   const StatCard = ({ title, value, icon, color }: { title: string; value: number; icon: React.ReactNode; color: string }) => (
     <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)` }}>
       <CardContent>
@@ -114,9 +323,37 @@ const PostDashboard: React.FC<PostDashboardProps> = ({ posts }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
-        📊 Статистика постов
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+          📊 Статистика постов
+        </Typography>
+        <ButtonGroup variant="contained" size="medium">
+          <Button
+            startIcon={<TableChartIcon />}
+            onClick={exportToExcel}
+            sx={{
+              background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+              },
+            }}
+          >
+            Экспорт в Excel
+          </Button>
+          <Button
+            startIcon={<PictureAsPdfIcon />}
+            onClick={exportToPDF}
+            sx={{
+              background: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #d32f2f 0%, #c62828 100%)',
+              },
+            }}
+          >
+            Экспорт в PDF
+          </Button>
+        </ButtonGroup>
+      </Box>
 
       {/* Карточки с общей статистикой */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -154,90 +391,84 @@ const PostDashboard: React.FC<PostDashboardProps> = ({ posts }) => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* График по времени */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-              📈 Динамика за последние 7 дней
-            </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <LineChart data={timeSeriesData}>
+        <Paper sx={{ p: 3, height: 600, width: '100%' }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            📈 Динамика за последние 7 дней
+          </Typography>
+          <ResponsiveContainer width="100%" height="92%">
+            <LineChart data={timeSeriesData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="views" stroke="#2196f3" strokeWidth={2} name="Просмотры" />
+              <Line type="monotone" dataKey="likes" stroke="#e91e63" strokeWidth={2} name="Лайки" />
+              <Line type="monotone" dataKey="comments" stroke="#ff9800" strokeWidth={2} name="Комментарии" />
+              <Line type="monotone" dataKey="reposts" stroke="#4caf50" strokeWidth={2} name="Репосты" />
+            </LineChart>
+          </ResponsiveContainer>
+        </Paper>
+
+        {/* Круговая диаграмма */}
+        <Paper sx={{ p: 3, height: 600, width: '100%' }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            🥧 Распределение метрик
+          </Typography>
+          {pieData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="92%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={180}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+              <Typography color="text.secondary">Нет данных для отображения</Typography>
+            </Box>
+          )}
+        </Paper>
+
+        {/* Столбчатая диаграмма топ постов */}
+        <Paper sx={{ p: 3, height: 600, width: '100%' }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            🏆 Топ-10 постов по просмотрам
+          </Typography>
+          {topPostsData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="92%">
+              <BarChart data={topPostsData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
+                <XAxis dataKey="name" angle={-45} textAnchor="end" height={120} />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="views" stroke="#2196f3" strokeWidth={2} name="Просмотры" />
-                <Line type="monotone" dataKey="likes" stroke="#e91e63" strokeWidth={2} name="Лайки" />
-                <Line type="monotone" dataKey="comments" stroke="#ff9800" strokeWidth={2} name="Комментарии" />
-                <Line type="monotone" dataKey="reposts" stroke="#4caf50" strokeWidth={2} name="Репосты" />
-              </LineChart>
+                <Bar dataKey="views" fill="#2196f3" name="Просмотры" />
+                <Bar dataKey="likes" fill="#e91e63" name="Лайки" />
+                <Bar dataKey="comments" fill="#ff9800" name="Комментарии" />
+              </BarChart>
             </ResponsiveContainer>
-          </Paper>
-        </Grid>
-
-        {/* Круговая диаграмма */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-              🥧 Распределение метрик
-            </Typography>
-            {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="90%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <Typography color="text.secondary">Нет данных для отображения</Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-
-        {/* Столбчатая диаграмма топ постов */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-              🏆 Топ-10 постов по просмотрам
-            </Typography>
-            {topPostsData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="90%">
-                <BarChart data={topPostsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="views" fill="#2196f3" name="Просмотры" />
-                  <Bar dataKey="likes" fill="#e91e63" name="Лайки" />
-                  <Bar dataKey="comments" fill="#ff9800" name="Комментарии" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <Typography color="text.secondary">Нет данных для отображения</Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+              <Typography color="text.secondary">Нет данных для отображения</Typography>
+            </Box>
+          )}
+        </Paper>
+      </Box>
     </Box>
   );
 };

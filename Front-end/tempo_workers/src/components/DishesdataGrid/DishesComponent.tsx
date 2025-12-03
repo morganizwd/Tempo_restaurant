@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, MenuItem, Select, TextField } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material';
+import { Button, Modal, Form } from 'react-bootstrap';
+import { Plus } from 'react-bootstrap-icons';
 import DishesDataGrid from './DishesDataGrid';
 import DishesType from '../../shared/types/dishes';
 import { useGlobalStore } from '../../shared/state/globalStore';
 import CategoryType from '../../shared/types/category';
+import "./DishesComponent.scss";
 
 const DishesComponent = () => {
-    const { Dishes, fetchDishes, deleteDishes, updateDishes, createDishes } = useGlobalStore();
+    const { Dishes, fetchDishes, deleteDishes, updateDishes, createDishes, Category, fetchCategory } = useGlobalStore();
     const [open, setOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [newDishes, setNewDishes] = useState({} as DishesType);
-    const [selectedDishes, setSelectedDishes] = useState<DishesType| null>(null);
+    const [selectedDishes, setSelectedDishes] = useState<DishesType | null>(null);
     const [limit, setLimit] = useState(5);
     const [page, setPage] = useState(1);
-    const { Category } = useGlobalStore();
 
     useEffect(() => {
         fetchDishes(page, limit);
+        fetchCategory();
     }, [page, limit, open, editOpen]);
 
     const handleDelete = (id: string) => {
@@ -40,14 +41,7 @@ const DishesComponent = () => {
     };
 
     const handleCloseEdit = () => {
-        setSelectedDishes({
-            id: '',
-            name: '',
-            approx_time: 0,
-            price: '',
-            category: {} as CategoryType,
-            categoryId: ""
-        });
+        setSelectedDishes(null);
         setEditOpen(false);
     };
 
@@ -74,41 +68,24 @@ const DishesComponent = () => {
         handleClose();
     };
 
-    const handleLimitChange = (event: SelectChangeEvent) => {
-        setLimit(Number(event.target.value));
+    const handleLimitChange = (limit: number) => {
+        setLimit(limit);
     };
 
-    const handleCategoryChange = (event: SelectChangeEvent) => {
-        setNewDishes({ ...newDishes, categoryId: event.target.value })
+    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setNewDishes({ ...newDishes, categoryId: event.target.value });
     };
-
-    const renderCategory = () => {
-        const items: any[] = [];
-        for (let i in Category.items) {
-            let value = Category.items[i];
-            if (value == null) {
-                continue;
-            }
-            items.push(
-                <MenuItem
-                    key={`${value.id}`}
-                    value={value.id}
-                >{`${value.name}`}</MenuItem>
-            )
-        }
-        return items;
-    }
 
     return (
         <>
-            <div style={{ marginTop: '1rem', marginBottom: '0.5rem', textAlign: 'center' }}>
+            <div className="dishes-header">
                 <Button
-                    id="add"
-                    variant="contained"
-                    style={{ backgroundColor: '#FFA500', color: '#fff' }}
+                    variant="primary"
                     onClick={handleCreate}
+                    className="add-button"
                 >
-                    Добавить
+                    <Plus className="me-2" />
+                    Добавить блюдо
                 </Button>
             </div>
             <DishesDataGrid
@@ -121,48 +98,59 @@ const DishesComponent = () => {
                 handleDelete={handleDelete}
             />
 
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Создать блюдо</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        margin="dense"
-                        label="Название"
-                        type="name"
-                        fullWidth
-                        value={newDishes.name}
-                        onChange={(e) => setNewDishes({ ...newDishes, name: e.target.value })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Приблизительное время"
-                        type="approx_time"
-                        fullWidth
-                        value={newDishes.approx_time}
-                        onChange={(e) => setNewDishes({ ...newDishes, approx_time: Number(e.target.value) })}
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Цена"
-                        type="price"
-                        fullWidth
-                        value={newDishes.price}
-                        onChange={(e) => setNewDishes({ ...newDishes, price: e.target.value })}
-                    />
-                    <FormControl fullWidth variant="standard">
-                        <Select
-                            className="text-input"
-                            value={newDishes.categoryId ?? ""}
-                            onChange={handleCategoryChange}
-                        >
-                            {renderCategory()}
-                        </Select>
-                    </FormControl>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Отмена</Button>
-                    <Button onClick={handleSave}>Сохранить</Button>
-                </DialogActions>
-            </Dialog>
+            <Modal show={open} onHide={handleClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Создать блюдо</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Название</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={newDishes.name || ""}
+                                onChange={(e) => setNewDishes({ ...newDishes, name: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Приблизительное время (мин)</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={newDishes.approx_time || ""}
+                                onChange={(e) => setNewDishes({ ...newDishes, approx_time: Number(e.target.value) })}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Цена</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={newDishes.price || ""}
+                                onChange={(e) => setNewDishes({ ...newDishes, price: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Категория</Form.Label>
+                            <Form.Select
+                                value={newDishes.categoryId || ""}
+                                onChange={handleCategoryChange}
+                            >
+                                <option value="">Выберите категорию</option>
+                                {Category.items
+                                    .filter((item) => item != null)
+                                    .map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-secondary" onClick={handleClose}>Отмена</Button>
+                    <Button variant="primary" onClick={handleSave}>Сохранить</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

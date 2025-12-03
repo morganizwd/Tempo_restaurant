@@ -1,11 +1,13 @@
-#orderContainer{
-    margin: 0 auto;
-    margin-left: 10%;
-    margin-top: 3rem;
+@import "../../shared/styles/_variables";
+
+#orderContainer {
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column; 
     flex-wrap: wrap;
-    max-width: 80rem;
-    height: 53rem;
-    color: #444444;
+    gap: 1.5rem;
+    max-width: 100%;
+    min-height: 50rem;
+    color: #3c2816;
 }

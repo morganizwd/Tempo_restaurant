@@ -1,15 +1,15 @@
 @import "../../shared/styles/_variables";
 
-.action-buttons {
+.dishes-header {
   display: flex;
-  gap: 0.5rem;
   justify-content: center;
+  margin-bottom: 1.5rem;
   
-  .btn {
-    padding: 0.5rem;
-    min-width: 40px;
+  .add-button {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 }
+

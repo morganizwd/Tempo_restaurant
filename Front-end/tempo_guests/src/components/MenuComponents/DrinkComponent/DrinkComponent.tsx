@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Card, Button, InputGroup, Form } from "react-bootstrap";
+import { Plus, Dash } from "react-bootstrap-icons";
 import DrinkType from "../../../shared/types/drink";
-import { Button, IconButton, TextField } from "@mui/material";
-import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import { IKImage } from "imagekitio-react";
-import AddIcon from "@mui/icons-material/Add";
 import { useGlobalStore } from "../../../shared/state/globalStore";
+import "./DrinkComponent.scss";
 
 interface Props {
   drink?: DrinkType;
@@ -16,71 +16,95 @@ const DrinkComponent = ({ drink }: Props) => {
   }
 
   const { setNum, addToCart, decrementInCart, cart } = useGlobalStore();
+  const [quantity, setQuantity] = useState(cart[drink.id]?.num || 0);
 
-  const handleNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    let newValue = event.target.value as unknown as number;
+  useEffect(() => {
+    setQuantity(cart[drink.id]?.num || 0);
+  }, [cart, drink.id]);
+
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = parseInt(event.target.value) || 0;
     if (newValue < 0) {
       newValue = 0;
     }
     setNum(newValue, drink);
+    setQuantity(newValue);
   };
 
-  useEffect(() => {
-    cart;
-  }, [cart]);
+  const handleIncrement = () => {
+    addToCart(drink);
+    setQuantity((prev) => prev + 1);
+  };
+
+  const handleDecrement = () => {
+    decrementInCart(drink);
+    setQuantity((prev) => Math.max(0, prev - 1));
+  };
 
   return (
-    <div>
-      {drink.photo ? (
-        <IKImage urlEndpoint={process.env.IMAGE_API} path={drink.photo} />
-      ) : (
-        <img src="./src/shared/assets/default_food.png" />
-      )}
-      <p>{drink.name}</p>
-      <p>{drink.price}p</p>
-      <div id="add_to_cart">
-        {drink.id in cart ? (
-          <>
-            <IconButton
-              id="button"
-              onClick={() => {
-                decrementInCart(drink);
-              }}
-            >
-              <HorizontalRuleIcon />
-            </IconButton>
-            <TextField
-              type="number"
-              className="text-input "
-              id="cartNum"
-              variant="outlined"
-              value={cart[drink.id].num}
-              onChange={handleNumberChange}
-            />
-            <IconButton
-              id="button"
-              onClick={() => {
-                addToCart(drink);
-              }}
-            >
-              <AddIcon />
-            </IconButton>
-          </>
+    <Card className="drink-card">
+      <div className="drink-image-wrapper">
+        {drink.photo ? (
+          <IKImage
+            path={drink.photo}
+            className="drink-image"
+            transformation={[{ width: 400, height: 300, crop: "fill" }]}
+          />
         ) : (
-          <Button
-            id="button"
-            variant="contained"
-            onClick={() => {
-              addToCart(drink);
-            }}
-          >
-            Добавить в корзину
-          </Button>
+          <img
+            src="./src/shared/assets/default_food.png"
+            alt={drink.name}
+            className="drink-image"
+          />
         )}
       </div>
-    </div>
+      
+      <Card.Body className="drink-body">
+        <Card.Title className="drink-name">{drink.name}</Card.Title>
+        <Card.Text className="drink-price">
+          {drink.price} <span className="currency">{"\u0440\u0443\u0431."}</span>
+        </Card.Text>
+        
+        <div className="drink-actions">
+          {quantity > 0 ? (
+            <InputGroup className="quantity-control">
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={handleDecrement}
+                className="quantity-btn"
+              >
+                <Dash />
+              </Button>
+              <Form.Control
+                type="number"
+                value={quantity}
+                onChange={handleNumberChange}
+                min="0"
+                className="quantity-input"
+              />
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={handleIncrement}
+                className="quantity-btn"
+              >
+                <Plus />
+              </Button>
+            </InputGroup>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handleIncrement}
+              className="add-to-cart-btn"
+            >
+              <Plus className="me-2" />
+              {"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c"}
+            </Button>
+          )}
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 

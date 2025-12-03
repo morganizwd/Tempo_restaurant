@@ -11,6 +11,7 @@ export interface UserSlice {
   currentUserId: string;
   currentUser: UserType | null;
   login: (user: UserType) => void;
+  logout: () => void;
 }
 
 const InitialUserSlice = {
@@ -42,6 +43,15 @@ export const UserStore: StateCreator<UserSlice> = (set, get) => {
         currentUser: res.data,
         currentUserId: res.data.id,
         loading: false,
+      });
+    },
+    logout: () => {
+      set({
+        currentUser: null,
+        currentUserId: "",
+        loading: false,
+        success: false,
+        errorMessage: "",
       });
     },
   };
