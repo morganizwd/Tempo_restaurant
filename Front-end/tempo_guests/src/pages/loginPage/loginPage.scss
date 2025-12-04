@@ -165,6 +165,13 @@
         
         .PhoneInputCountryIcon {
           border-radius: 4px;
+          width: 30px !important;
+          height: 25px !important;
+          
+          img {
+            width: 40px !important;
+            height: 35px !important;
+          }
         }
         
         .PhoneInputCountrySelect {
