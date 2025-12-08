@@ -1,5 +1,5 @@
 @use "sass:color";
-@import "../../../shared/styles/_variables";
+@use "../../../shared/styles/_variables" as *;
 
 .CartItemComponent {
   display: grid;

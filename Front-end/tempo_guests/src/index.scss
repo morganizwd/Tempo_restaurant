@@ -1,9 +1,9 @@
+// Custom variables (must be first)
+@use "./shared/styles/_variables" as *;
+
 // Bootstrap imports
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
-
-// Custom variables
-@import "./shared/styles/_variables";
 
 // Override Bootstrap variables
 $primary: $primary-color;

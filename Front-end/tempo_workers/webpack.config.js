@@ -30,6 +30,14 @@ module.exports = {
             options: {
               // Prefer `dart-sass`, even if `sass-embedded` is available
               implementation: require("sass"),
+              sassOptions: {
+                silenceDeprecations: [
+                  "import",
+                  "global-builtin",
+                  "color-functions",
+                ],
+                quietDeps: true,
+              },
             },
           },
         ],
@@ -66,5 +74,18 @@ module.exports = {
     server: {
       type: "http",
     },
+    client: {
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
   },
+  ignoreWarnings: [
+    /Module Warning \(from .*sass-loader/,
+    /Deprecation Warning/,
+    /Sass @import rules are deprecated/,
+    /Global built-in functions are deprecated/,
+    /is deprecated\. Suggestion:/,
+  ],
 };

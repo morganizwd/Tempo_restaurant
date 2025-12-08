@@ -1,5 +1,5 @@
 @use "sass:color";
-@import "../../shared/styles/_variables";
+@use "../../shared/styles/_variables" as *;
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&display=swap");
 
 .post-page-wrapper {
